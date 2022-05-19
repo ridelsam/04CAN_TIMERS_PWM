@@ -1,0 +1,1366 @@
+/* Java Script CAN Bit Time register value calculation
+ * (c) 2015-20 Heinz-Jürgen Oertel <hj.oertel@t-online.de> */
+
+    /* arbitration bit times for classic CAN, up to 1 Mbit/s */
+    var abittime = new Array();
+    var abitrate = new Array();
+
+    abittime[0]  = 1.00e-6;	abitrate[0]  = 1000;
+    abittime[1]  = 1.25e-6;	abitrate[1]  =  800;
+    abittime[2]  = 2.00e-6;	abitrate[2]  =  500;
+    abittime[3]  = 4.00e-6;	abitrate[3]  =  250;
+    abittime[4]  = 8.00e-6;	abitrate[4]  =  125;
+    abittime[5]  = 1.00e-5;	abitrate[5]  =  100;
+    abittime[6]  = 1.20e-5;	abitrate[6]  =  83.333;
+    abittime[7]  = 2.00e-5;	abitrate[7]  =   50;
+    abittime[8]  = 5.00e-5;	abitrate[8]  =   20;
+    abittime[9]  = 1.00e-4;	abitrate[9]  =   10;
+    /*
+    abittime[10] = 6.25e-5;	abitrate[10] =   16;
+    */
+
+
+    /* fast bit times for CAN FD, up to 5 Mbit/s */
+    var fbittime = new Array();
+    var fbitrate = new Array();
+    fbittime[0]  = 1.25e-7;	fbitrate[0]  = 8000;
+    fbittime[1]  = 2.e-7;	fbitrate[1]  = 5000;
+    fbittime[2]  = 2.5e-7;	fbitrate[2]  = 4000;
+    fbittime[3]  = 5.e-7;	fbitrate[3]  = 2000;
+    fbittime[4]  = 1.e-6;	fbitrate[4]  = 1000;
+    fbittime[5]  = 1.25e-6;	fbitrate[5]  =  800;
+    fbittime[6]  = 2.e-6;	fbitrate[6]  =  500;
+    fbittime[7]  = 2.5e-6;	fbitrate[7]  =  400;
+    fbittime[8]  = 4.e-6;	fbitrate[8]  =  250;
+    fbittime[9]  = 5.e-6;	fbitrate[9]  =  200;
+    fbittime[10]  = 8.e-6;	fbitrate[10]  =  125;
+    fbittime[11]  = 10.e-6;	fbitrate[11]  =  100;
+
+    var accuracy = 1.e-3;	// minimum required accuracy of the bit time
+
+    var std_tbl_bg1 = "#E4E4E4";	// standard Table background for HTML
+    var std_tbl_bg2 = "#B0B0B0";	// standard Table background for HTML
+    var emp_tbl_bg  = "#FFFF00";	// emphasized Table background for HTML
+    var stdbg       = std_tbl_bg1;
+
+    /* The CAN controller data base object
+     * From the HTML page the selected controller by it's "label".
+     *
+     * checkValues() check and correct bittiming Values
+       it is called, before each line with register values should be printed
+       \retval
+       -1 incorrect values
+        0 correct values
+        1 incorrect values corrected
+    */
+    var CanController = {
+    can_1: {
+    	label: "AFCAN",
+    	tableIntroduction: "Renesas (former NEC)",
+	max_brp: 	256,
+	min_tq: 	 8,
+	max_tq: 	25,
+	max_tq1:	16,
+	max_sjw:	4,
+	linktext:	"#AFCAN",
+	tableHeader2:	"<td>Register<br>CnBRP</td><td>Register<br>CnBTR</td>",
+	checkValues(bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+    /* calculate und build the last table columns with controller specific register values
+     * brp	- real pre scaler value - 1, the typical register value
+     * propseg  - real prop seg
+     * pseg1	- real phase1 seg
+     * t_seg1   - real number of tq for prop + phase 1 seg
+     * t_seg2   - real number of tq for phase2
+     */
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		hex[0] = ("0000" + brp.toString(16)).substr(-2);
+		var timing =  (t_seg1 -1) + ((t_seg2 -1) << 8);
+		hex[1] = ("0000" + timing.toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_2: {
+    	label: "Allwinner",
+    	tableIntroduction: "this can be found on BananaPi",
+	max_brp: 	1024,
+	min_tq: 	 8,
+	max_tq: 	25,
+	max_tq1:	16,		// max number of tq in segment 1	
+	max_sjw:	4,
+	linktext:	"#Allwinner",
+	tableHeader2:	"<td>Register<br>CAN_BUS_TIME</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if ((seg2 > 8) || (seg1 > 16) || (seg1 < seg2)) {
+		    if ( debug == true) { 
+			$('#debugOutput').append("Some checks failed");
+		    }
+		    retval = -1;
+		}
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var br = brp + ((sjw - 1) << 14) + ((t_seg1 - 1) << 16) + ((t_seg2 - 1) << 20);
+	        hex[0] = ("00000000" + br.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_3: {
+    	label: "BlackFin",
+    	tableIntroduction: "Analog Devices ADI",
+	max_brp:	1024,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	linktext:	"#BlackFin",
+	    /* two timing registers */
+	tableHeader2:	"<td>CAN_CLK</td><td>CAN_TIMING</td>",
+	checkValues(bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		hex[0] = ("0000" + brp.toString(16)).substr(-4);
+		var timing =  (t_seg1 -1) + ((t_seg2 -1) << 4);
+		hex[1] = ("0000" + timing.toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_4: {
+    	label: "AT91SAM9263",
+    	tableIntroduction: "ATMEL (can4linux available)",
+	max_brp: 	64,
+	min_tq: 	 8,
+	max_tq: 	25,
+	max_tq1:	16,
+	max_sjw:	4,
+	haspropseg:	1,
+	linktext:	"#AT91SAM9263",
+	tableHeader2:	"<td>Register<br>CAN_BR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		/* PHASE2 value must be different from 0.
+		 * PROPSEG 1...8
+		 * PHASE1 1....8
+		 * PHASE2 < PHASE1
+		 * IPT (information processing time) = 2
+		 * PHASE2 >= IPT
+		 */
+		if ((seg2 < 2) || (seg2 > (seg1 + propseg))) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var br = (brp << 16) + ((sjw - 1) << 12) + ((propseg - 1) << 8) + ((pseg1 - 1) << 4) + (t_seg2 - 1);
+	        hex[0] = ("00000000" + br.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_5: {
+    	label:		"CANary",
+    	tableIntroduction: "Atmel",
+	max_brp:	64,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	max_tq2:	8,
+	max_sjw:	4,
+	haspropseg:	8,
+	linktext:	"#CANary",
+	/* three bit timing registers */
+	tableHeader2:	"<td>CANBT1</td><td>CANBT2</td><td>CANBT3</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if ((seg2 < 2) || (seg2 > (seg1 + propseg))) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var canbt1 = ((brp & 0x3f) << 1);
+		hex[0] = ("0000" + canbt1.toString(16)).substr(-2);
+		var canbt2 = ((sjw -1) << 5) + (((propseg - 1) & 0x07) << 1);
+		hex[1] = ("0000" + canbt2.toString(16)).substr(-2);
+		var canbt3 = ((t_seg2 - 1)  << 4) + ((pseg1 - 1) << 1);
+		hex[2] = ("0000" + canbt3.toString(16)).substr(-2);
+		return hex;
+	}
+    },
+    can_6: {
+    	label:		"C_CAN",
+    	tableIntroduction: "BOSCH IP",
+	max_brp:	1024,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	linktext:	"#C_CAN",
+	/* four bit timing registers */
+	tableHeader2:	"<td>Register<br>BTR0</td><td>Register<br>BTR1</td>"
+	+ "<td>Register<br>BTR</td><td>Register<br>BRPE</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		// brp is only 6 bit wide --> & 0x3F
+		var btr0 = (brp & 0x3f) + ((sjw -1) << 6);
+		hex[0] = ("0000" + (btr0).toString(16)).substr(-2);
+		var btr1 = (t_seg1 -1) + ((t_seg2 -1) << 4);
+		hex[1] = ("0000" + btr1.toString(16)).substr(-2);
+		var btr = (btr1 << 8) + (brp & 0x3F) + ((sjw -1 ) << 6);
+		hex[2] = ("0000" + btr.toString(16)).substr(-4);
+		// calculate the 4 bit BRPE
+		hex[3] = ("0000" + (brp >> 6).toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_7: {
+    	label:		"M_CAN",
+    	tableIntroduction: "BOSCH IP",
+	max_brp:	512,
+	min_tq:		4,
+	max_tq:		385,
+	max_tq1:	255,
+	max_tq2:	127,
+	max_fbrp:	32,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+	linktext:	"#M_CAN",
+	tableHeader2:	"<td>Register<br>BTP</td><td>Register<br>FBTP</td>",
+        emphLine:       80,
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var btp = (brp << 16) | ((t_seg1 - 1) << 8) | ((t_seg2 - 1) << 4);
+	        hex[0] = ("00000000" + btp.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_8: {
+    	label:		"Philips",
+    	tableIntroduction: "SJA1000 equivalent (can4linux for many board available)",
+	max_brp:	64,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	linktext:	"#NXP",
+	tableHeader2:	"<td>Register<br>BTR0</td><td>Register<br>BTR1</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var btr0 = brp + ((sjw - 1) << 6);
+		hex[0] = ("0000" + btr0.toString(16)).substr(-2);
+		var btr1 = (t_seg1 -1) + ((t_seg2 -1) << 4);
+		hex[1] = ("0000" + btr1.toString(16)).substr(-2);
+	    
+
+	    return hex;
+	}
+    },
+    can_9: {
+    	label:		"MultiCAN",
+    	tableIntroduction: "Infineon",
+	max_brp:	64 * 8,	// BRP * DIV8
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	linktext:	"#MultiCAN",
+	tableHeader2:	"<td>&nbsp;DIV8</td><td>&nbsp;BRP</td><td>Register<br>NBTR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+	    /* MultiCAN has a maximum divider by 512, the 6 bit BRP from 1...64
+	     * and a fixed by 8 pre divider, DIV8.
+	     * Check here for the possible values */
+		if (brp > 64) {
+		    var intRegex = /^\d+$/;
+		    if(intRegex.test(brp/8)) {
+			    // alert('I am an int');
+			    ;
+		    } else {
+			retval = -1;
+		    }
+		}
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var div8 = 0;
+		if (brp > 64) {
+		    div8 = 1;
+		    /* function checkValues()
+		     * already checked for values which can be divided by 8
+		     * A bitwise or operator '|'
+		     * can be used to truncate floating point
+		     */
+		    brp = (brp/8 | 0);
+		}
+		hex[0] = div8; // is only 0|1 , dec is the same as hex
+	        hex[1] = brp.toString(16); // is later displayed as 0x....
+		var nbtr = brp  + ((sjw -1) << 6) +((t_seg1-1) << 8) + ((t_seg2-1) << 12) + (div8 << 15);
+	        hex[2] = ("00000000" + nbtr.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_10: {
+    	label:		"MultiCANFD",
+	tableIntroduction: "<b>Preliminary calculation, algorithm not proved yet. Only classic CAN bit rate</b>",
+	max_brp:	64 * 8,	// BRP * DIV8
+	min_tq:		8,
+	max_tq:		96,
+	max_sjw:	16,
+	linktext:	"#MultiCAN",
+	tableHeader2:	"<td>&nbsp;DIV8</td><td>&nbsp;BRP</td><td>&nbsp;Register<br>&nbsp;NBTEVR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (brp > 64) {
+		    var intRegex = /^\d+$/;
+		    if(intRegex.test(brp/8)) {
+			    // alert('I am an int');
+			    ;
+		    } else {
+			retval = -1;
+		    }
+		}
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var div8 = 0;
+		if (brp > 64) {
+		    div8 = 1;
+		    /* function checkValues()
+		     * already checked for values which can be divided by 8
+		     * A bitwise or operator '|'
+		     * can be used to truncate floating point
+		     */
+		    brp = (brp/8 | 0);
+		}
+	        // all hex[] registers are displayed as hex with 0x...
+		hex[0] = div8;
+	        hex[1] = brp.toString(16); // is later displayed as 0x....
+		var nbtr = brp  + ((sjw -1) << 8) +((t_seg2 - 1) << 16) + ((t_seg1 - 1) << 22) + (div8 << 15);
+	        hex[2] = ("00000000" + nbtr.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_11: {	// Infineon Fast BTR for CAN FD
+    	label:		"MultiCANFFD",	// Infineon Fast BTR for CAN FD
+	tableIntroduction: "<b>Preliminary calculation, algorithm not proved yet.</b>",
+	max_brp:	64,		// BRP
+	min_tq:		5,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	fbittime:	true,
+	linktext:	"#MultiCAN",
+	tableHeader2:	"<td>Register<br>FNBTR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var fnbtr = brp  + ((sjw -1) << 6) +((t_seg1 - 1) << 8) + ((t_seg2 - 1) << 12);
+	        hex[0] = ("00000000" + fnbtr.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_12: {		// Gridconnect
+    	label:		"DSTni",
+    	tableIntroduction: "this can be found on some Gridconnect devices",
+	max_brp:	2048,
+	min_tq:		8,
+	max_tq:		25,
+	linktext:	"#Grid_DSTni",
+	tableHeader2:	"<td>Bit Rate<br>Divisor</td><td>CAN<br>tsegs</td>",
+	/* two 16 bit registers */
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		/* t_seg1 = Propseg + seg1 . DSTni has no propseg */
+		var tseg1 = propseg + seg1;
+		if (tseg1 == 1 || tseg1 == 2 || seg2 == 1 )
+			retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		hex[0] = ("0000" + brp.toString(16)).substr(-4);
+		var config = ((t_seg1 -1) << 8) + ((t_seg2 -1) << 12);
+		hex[1] = ("0000" + config.toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_13: {		// Renesas
+    	label:		"RX62N",
+    	tableIntroduction: "",
+	max_brp:	1024,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	linktext:	"#RX62N",
+	tableHeader2:	"<td>Register<br>CxBCR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // The only register is CxBCR, which is 32 bit wide, 8 hex numbers
+		// Integers are always signed, so strange things happen if bit 31 is set
+		// the >>>0 is from
+		// http://stackoverflow.com/questions/1908492/unsigned-integer-in-javascript
+		var btr = ((brp <<16) |( ((t_seg1 - 1) << 28)) | ((t_seg2 - 1) <<8)) >>> 0  ;
+	        hex[0] = ("00000000" + btr.toString(16)).substr(-8);
+	    return hex; 
+	}
+    },
+    can_14: {		// Renesas
+    	label:		"M32C87",
+    	tableIntroduction: "Renesas",
+	max_brp:	256,
+	min_tq:		8,
+	max_tq:		25,
+	linktext:	"#M32C87",
+	tableHeader2:	"<td>Register<br>CiBRP</td><td>Register<br>CiCONR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		/* ToDo: check these tests again ! */
+		if (    (seg2 < 2) || (seg2 > 8)
+		     || (seg1 < 2) || (seg1 > 8)
+		     || (propseg < 0) || (propseg > 8)
+		   ) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		hex[0] = ("0000" + brp.toString(16)).substr(-2);
+		var btr = ((propseg - 1) << 5) | ((pseg1 - 1) << 8) | ((t_seg2 - 1) << 11);
+	        hex[1] = ("0000" + btr.toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_15: {		// Renesas
+    	label:		"RSCAN",
+    	tableIntroduction: "",
+	max_brp:	1024,
+	min_tq:		8,
+	max_tq:		25,
+	linktext:	"#RSCAN",
+	tableHeader2:	"<td>Register<br>RSCAN0CmCFG</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // The only register is RSCAN0CmCFG, which is 32 bit wide, 8 hex numbers
+		var btr = brp | ((t_seg1 - 1) << 16) | ((t_seg2 - 1) << 20);
+	        hex[0] = ("00000000" + btr.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_16: {		// Freescale
+    	label:		"TouCAN",
+    	tableIntroduction: "",
+	max_brp:	256,
+	min_tq:		9,
+	max_tq:		25,
+	haspropseg:	1,
+	linktext:	"#Freescale",
+	tableHeader2:	"<td>Register<br>PRESDIV</td><td>Register<br>PROPSEG</td>"
+	 +"<td>Register<br>PSEG1</td><td>Register<br>PSEG2</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        hex[0] = ("0000" + brp.toString(16)).substr(-2);
+	        propseg -= 1;
+	        hex[1] = ("0000" + propseg.toString(16)).substr(-2);
+	        pseg1 -= 1;
+	        hex[2] = ("0000" + pseg1.toString(16)).substr(-2);
+	        t_seg2 -=1;
+	        hex[3] = ("0000" + t_seg2.toString(16)).substr(-2);
+		return hex;
+	}
+    },
+    can_17: {		// Freescale
+    	label:		"FlexCAN",
+    	tableIntroduction: "(can4linux available)",
+	max_brp:	256,
+	min_tq:		8,
+	max_tq:		25,
+	haspropseg:	1,
+	linktext:	"#Freescale",
+	tableHeader2:	"<td>Register<br>PRESDIV</td><td>Register<br>PROPSEG</td>"
+ 	 + "<td>Register<br>PSEG1</td><td>Register<br>PSEG2</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1;
+		return retval;
+	},
+	/* the same registers as TouCAN controller */ 
+	//calcLineEnd: CanController.can_16.calcLineEnd
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        hex[0] = ("0000" + brp.toString(16)).substr(-2);
+	        propseg -= 1;
+	        hex[1] = ("0000" + propseg.toString(16)).substr(-2);
+	        pseg1 -= 1;
+	        hex[2] = ("0000" + pseg1.toString(16)).substr(-2);
+	        t_seg2 -=1;
+	        hex[3] = ("0000" + t_seg2.toString(16)).substr(-2);
+		return hex;
+	}
+    },
+    can_18: {		// ST microelectronics
+    	label:		"bxCAN",
+    	tableIntroduction: "",
+	max_brp:	1024,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	linktext:	"#bxCAN",
+	tableHeader2: "<td>Register<br>CAN_BTR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // The only register is CAN_BTR, which is 32 bit wide, 8 hex numbers
+		var btr = brp | ((t_seg1 - 1) << 16) | ((t_seg2 - 1) << 20)
+		    | ((sjw -1 ) << 24);
+	        hex[0] = ("00000000" + btr.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_19: {		// Texas Instruments
+    	label:		"eCAN",
+    	tableIntroduction: "",
+	max_brp:	256,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	linktext:	"#TMS320",
+	tableHeader2:	"<td>CAN_BTC</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		/* IPT (information processing time) corresponds to the time
+		 * necessary for the processing of the bit read.
+		 * IPT corresponds to two units of TQ.
+		 * The following bit timing rules
+		 * must be fulfilled when determining the bit segment values:
+		 * - TSEG1(min) >= TSEG2
+		 * - IPT <= TSEG1 <= 16 TQ
+		 * - IPT <= TSEG2 <= 8 TQ
+		 * - IPT = 3/BRP (the resulting IPT has to be rounded up to the next integer value)
+		 */
+
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // CAN_BTC, which is 32 bit wide, 8 hex numbers
+		var btc = (brp << 16) | ((t_seg1 - 1) << 3) | (t_seg2 - 1);
+	        hex[0] = ("00000000" + btc.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_20: {		// Xilinx
+    	label:		"Xilinx",
+    	tableIntroduction: "XCAN is like NXP(Philips) SJA1000",
+	max_brp:	255,
+	min_tq:		8,
+	max_tq:		25,
+	max_tq1:	16,
+	linktext:	"#XCAN",
+	tableHeader2:	"<td>Register<br>BRPR</td><td>Register<br>BTR</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	/* can we use the same function as for SJA1000 ?? */
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var btr0 = brp + ((sjw - 1) << 6);
+		hex[0] = ("0000" + btr0.toString(16)).substr(-2);
+		var btr1 = (t_seg1 -1) + ((t_seg2 -1) << 4);
+		hex[1] = ("0000" + btr1.toString(16)).substr(-2);
+		return hex;
+	}
+    },
+    can_21: {		// microchip
+    	label:		"PIC32",
+    	tableIntroduction: "",
+	max_brp:	128,		// max is brp * 2;  value of prescaler
+	min_tq:		8,		// minimum number of Time Quanta per Bit
+	max_tq:		25,
+	max_sjw:	4,
+	haspropseg:	1,
+	linktext:	"#PIC32",
+	tableHeader2:	"<td>Register<br>CiCFG</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		// brp 1... 128 should by dividable by 2 to result in 1...64
+		if (brp % 2 ) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // CiCFG, which is 32 bit wide, 8 hex numbers
+		var cfg = (brp / 2) | (1 << 15) | ((propseg-1) << 8) | ((pseg1-1) << 11) | ((t_seg2 -1) << 16) ;
+	        hex[0] = ("00000000" + cfg.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_22: {		// CAST 
+    	label:		"IPMS",
+	tableIntroduction: "<b>Preliminary calculation, algorithm not proved yet. Only classic CAN bit rate</b>",
+	max_brp:	256,
+	min_tq:		6,
+	max_tq:		25,		// in classic CAN  
+	// in FD mode max_tq  = 96;	 64 + 32 
+	max_fbrp:	256,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+	linktext:	"#IPMS",
+	tableHeader2:	"<td>Register<br>BITTIME0</td> \
+	    <td>Register<br>BITTIME1</td><td>Register<br>BITTIME2</td> \
+	    <td>Register<br>S_PRESC</td><td>Register<br>F_PRESC</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		/* in classic CAN
+		 * seg1 3...17   == propseg + seg1
+		 * seg2 2...8
+		 * SJW 1..4
+		 */
+		if (brp  < 2) retval = -1;
+		if ((propseg + seg1) < 3 || (propseg + seg1) > 17) retval = -1;
+		if (seg2 < 2 || seg2 > 8) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var b0 = (t_seg1 - 1);
+		hex[0] = ("0000" + b0.toString(16)).substr(-2);
+		var b1 = (t_seg2 - 1);
+		hex[1] = ("0000" + b1.toString(16)).substr(-2);
+		var b2 = 0;
+		hex[2] = ("0000" + b2.toString(16)).substr(-2);
+		var sbrp = brp;
+		hex[3] = ("0000" + sbrp.toString(16)).substr(-2);
+		var fbrp = 0;
+		hex[4] = ("0000" + fbrp.toString(16)).substr(-2);
+		return hex;
+	}
+    },
+    can_23: {		// 
+    	label:		"IFI-CANFD",
+	tableIntroduction: "arbitration bit time in non-ISO (can4linux available)",
+	max_brp:	4096,
+	min_tq:		6,
+	max_tq:		60,	// in classic CAN
+	// in FD mode
+	max_tq:		96,	 // 64 + 32 
+	max_sjw:	8,
+	max_fbrp:	256,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+	linktext:	"#IFI",
+	tableHeader2:	"<td>Register<br>time</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 2) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var time = 0;
+		time = ((brp - 1) << 16) + ((sjw -1) << 28);
+		time |= (0xC0 | (t_seg1 - 1)) << 8;
+		time |= (0xC0 | (t_seg2 - 2));
+
+		hex[0] = ("00000000" + time.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_24: {		// 
+    	label:		"IFI-CANFD-ISO",
+	tableIntroduction: "arbitration bit time in ISO CAN FD (can4linux available)",
+	max_brp:	Math.pow(2, 9),
+	min_tq:		6,
+	max_tq:		60,	// in classic CAN
+	// in FD mode
+	max_tq:		96,	 // 64 + 32 
+	max_sjw:	Math.pow(2, 7),
+	max_fbrp:	256,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+	linktext:	"#IFI",
+	tableHeader2:	"<td>Register<br>time</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 2) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var time = 0;
+		time = ((brp - 1) << 16) + ((sjw -1) << 25);
+		time |= ((t_seg1 - 1) & 0xFF) << 8;
+		time |= ((t_seg2 - 2) & 0xFF);
+
+		hex[0] = ("00000000" + time.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_25: {		// 
+    	label:		"IFI-CANFFD",
+	tableIntroduction: "CAN FD data bit timing in non-ISO mode, <b>Preliminary calculation, algorithm not proved yet. Only classic CAN bit rate</b>",
+	max_brp:	256,	
+	min_tq:		4,
+	max_tq:		25,
+	max_sjw:	Math.pow(2, 4),
+	fbittime:	true,
+	linktext:	"#IFI",
+	tableHeader2:	"<td>Register<br>time</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 2) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var time = 0;
+		time = ((brp - 1) << 16) + ((sjw -1) << 28);
+		time |= (0xC0 | (t_seg1 - 1)) << 8;
+		time |= (0xC0 | (t_seg2 - 2));
+
+		hex[0] = ("00000000" + time.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_26: {		// 
+    	label:		"IFI-CANFFD-ISO",
+	tableIntroduction: "CAN FD data bit timing in ISO mode, <b>Preliminary calculation, algorithm not proved yet. Only classic CAN bit rate</b>",
+	max_brp:	Math.pow(2, 9),	
+	min_tq:		4,
+	max_tq:		25,
+	max_sjw:	Math.pow(2, 7),
+	fbittime:	true,
+	linktext:	"#IFI",
+	tableHeader2:	"<td>Register<br>time</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 2) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var time = 0;
+		time = ((brp - 1) << 16) + ((sjw -1) << 25);
+		time |= ((t_seg1 - 1) & 0xFF) << 8;
+		time |= ((t_seg2 - 2) & 0xFF);
+
+		hex[0] = ("00000000" + time.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_27: {		// 
+    	label:		"Profichip",
+	tableIntroduction: "",
+	max_brp:	256,	
+	min_tq:		4,
+	max_tq:		25,
+	max_tq1:	16,
+	max_sjw:	4,
+	fbittime:	false,
+	linktext:	"#Profichip",
+	tableHeader2:	"<td>CAN<br>Bit timing</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // The only register is CxBCR, which is 32 bit wide, 8 hex numbers
+		// Integers are always signed, so strange things happen if bit 31 is set
+		// the >>>0 is from
+		// http://stackoverflow.com/questions/1908492/unsigned-integer-in-javascript
+		var btr = (((t_seg2 - 1) << 28) | ((t_seg1 - 1) << 24)
+		       	| (brp << 16)
+			| (sjw - 1) << 14) >>> 0  ;
+	        hex[0] = ("00000000" + btr.toString(16)).substr(-8);
+	    return hex; 
+	}
+    },
+    can_28: {		// microchip
+	// reference
+	// Set up the CAN module for 250kbps speed with 10 Tq per bit.
+     	// C1CFG1 = 0x4B; // BRP = 12 SJW = 2 Tq
+     	// C1CFG2 = 0x2D2;   seg2 = 3, preseg = 3, seg1 = 6 , SegSum = 12+1 = 13 
+	//     bit SAM = 1
+    	label:		"dsPIC33",
+    	tableIntroduction: "this is beta for the dsPIC33",
+	max_brp:	128,		// max is brp * 2;  value of prescaler
+	min_tq:		8,		// minimum number of Time Quanta per Bit
+	max_tq:		25,
+	max_sjw:	4,
+	haspropseg:	1,
+	linktext:	"#dsPIC33",
+	tableHeader2:	"<td>Register<br>CiCFG1</td><td>Register<br>CiCFG2</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		// brp 1... 128 should by dividable by 2 to result in 1...64
+		if ( brp % 2 ) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+	        // CiCFG?, which are 16 bit wide, 4 hex numbers
+		var cfg1 = (brp / 2) | ((sjw -1) << 6);
+	        hex[0] = ("00000000" + cfg1.toString(16)).substr(-4);
+		// set fixed SEG2PHT2 at bit 7,
+		var cfg2 = (1 << 7) | (propseg-1) | ((pseg1-1) << 3) | ((t_seg2 -1) << 8) ;
+	        hex[1] = ("00000000" + cfg2.toString(16)).substr(-4);
+		return hex;
+	}
+    },
+    can_29: {		// 
+    	label:		"KVASER-CANFD-ISO",
+	tableIntroduction: "arbitration bit time in ISO CAN FD (can4linux available)",
+	max_brp:	4096,
+	min_tq:		6,
+	max_tq:		60,	// in classic CAN
+	// in FD mode
+	max_tq:		287,	 // tq1 + tq2 
+	max_tq1:	255,
+	max_tq2:	32,
+	max_sjw:	16,
+	max_fbrp:	4096,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+        emphLine:       160, // emphasize lines with this numer of tq
+	linktext:	"#Kvaser",
+	tableHeader2:	"<td>Register<br>btrn</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 1) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var btrn = 0;
+		btrn = ((brp ) & 0x1FFF) + (((sjw -1) & 0x0F) << 13);
+		btrn |= ((t_seg1 - 1) & 0x1FF) << 17;
+		btrn |= ((t_seg2 - 1) & 0x1F) << 26; 
+
+		hex[0] = ("00000000" + btrn.toString(16)).substr(-8);
+		return hex;
+	}
+    },
+    can_30: {		// 
+    	label:		"KVASER-CANFFD-ISO",
+	tableIntroduction: "CAN FD data bit timing in ISO mode, <b>Preliminary calculation, algorithm not proved yet. Only classic CAN bit rate</b>",
+	max_brp:	Math.pow(2, 9),
+	min_tq:		6,
+	max_tq:		60,	// in classic CAN
+	// in FD mode
+	max_tq:		96,	 // 64 + 32 
+	max_sjw:	16,
+	max_fbrp:	256,  // fast bit timing parameters
+	min_ftq:	4,
+	max_ftq:	25,
+	linktext:	"#Kvaser",
+	tableHeader2:	"<td>Register<br>btrd</td>",
+	checkValues(debug, bitrate, brp, propseg, seg1, seg2) {
+		var retval = 0;
+		if (seg2 < 2) retval = -1; 
+		if (brp  < 1) retval = -1;
+		return retval;
+	},
+	calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2) {
+	    	var hex = new Array();
+		var btrd = 0;
+		btrd = ((brp - 1) & 0x1FFF) + (((sjw -1) & 0x0F) << 13);
+		btrd |= ((t_seg1 - 1) & 0x1FF) << 17;
+		btrd |= ((t_seg2 - 2) & 0x1F) << 26; 
+
+		hex[0] = ("00000000" + btrd.toString(16)).substr(-8);
+		return hex;
+	}
+    }
+}
+
+/*
+* From the HTML page the selected controller is given as the "label".
+ * The following algorithm has to loop through all entries until it finds the can_<number>
+ * with this label. Than 
+ * the attributes like CanController.can_1.max_brp can be used
+ */
+
+
+    // the following can be controller specific
+    var CAN;				// holds the controller data 
+    var max_brp     = 64;		// maximum value of prescaler
+    var min_tq      = 8;		// minimum number of Time Quanta per Bit
+    var max_tq      = 25;		// maximum number of Time Quanta per Bit
+    var max_sjw     = 4;		// maximum number of bits for sync jump width
+    var haspropseg  = 0;		// controller has proseg register with #tq
+    var max_tq1     = 16;		// max number of tq in segment 1	
+    var max_tq2     = 8;		// max number of tq in segment 2	
+    // this is a default value
+    var sjw         = 1;		// Synchronization Jump Width
+
+    // fast bit timing for CAN FD
+    var max_fbrp	= 32;		// maximum value of prescaler for fast bit times
+    var min_ftq		= 4;		// minimum number of Time Quanta in fast mode
+    var max_ftq		= 25;		// maximum number of Time Quanta per Bit in fast mode
+
+    var family;				// family type set by combobox				
+    var canFD		= 0;		// CAN FD mode if true
+
+    var bitRate
+    var emphLine	= 16;		// emphasize lines with this numer of tq
+
+
+    /* May be we need some text before the real table, eg. for a disclaimer like
+     * "not yet ready"
+     */
+    var tableIntroduction = "";
+    // table header, later consist of of a generic part CAN specific
+    // and bit rate register typical part,
+    // which might be different for different CAN controllers
+    var tableHeader = "";
+    var tableHeader2 = "<td>Register<br>BTR0</td><td>Register<br>BTR1</td>";
+
+
+
+    // set CAN family parameters
+    function set_family_parameters(family) {
+	tableIntroduction = "";
+	bittime = abittime;	/* default is arbitration bitrate */
+	bitrate = abitrate;
+
+	var i = 0;
+	for (var prop in CanController) {
+	    i++;
+	    if (CanController[prop].label == family) {
+		// Family match
+		var CAN = CanController[prop];
+	    }
+	}
+
+	if(CAN.max_brp) max_brp	= CAN.max_brp;
+	if(CAN.min_tq)  min_tq	= CAN.min_tq;
+	if(CAN.max_tq)  max_tq	= CAN.max_tq;
+	if(CAN.max_tq1) max_tq1	= CAN.max_tq1;
+	if(CAN.max_tq2) max_tq2	= CAN.max_tq2;
+	if(CAN.max_sjw) max_sjw	= CAN.max_sjw;
+	if(CAN.haspropseg) haspropseg = CAN.haspropseg;
+	tableIntroduction	= CAN.tableIntroduction;
+	tableHeader2		= CAN.tableHeader2;
+        if(CAN.emphLine) emphLine = CAN.emphLine;
+
+	if (CAN.fbittime) {
+	    bittime = fbittime;
+	    bitrate = fbitrate;
+	}
+
+	sjw = $('#SJW').val(); if ( sjw > max_sjw ) sjw = max_sjw;
+	if ( sjw < 1 ) sjw = 1;
+
+	tableHeader = "<tr id='head'>"
+	    tableHeader += "<td>Bit<br>Rate</td> "
+	    tableHeader += "<td>accuracy</td>"
+	    tableHeader += "<td>Pre-<br>scaler</td>"
+	    tableHeader += "<td>Number of<br>time quanta</td>"
+	    tableHeader += "<td>Seg 1<br>(Prop_Seg+Phase_Seg1)</td>"
+	    tableHeader += "<td>Seg 2</td>"
+	    tableHeader += "<td>Sample Point<br>at</td>"
+	    tableHeader +=  tableHeader2
+	    tableHeader += "</tr>"
+
+	 return CAN;
+    }
+
+
+    // behind the table a text paragraph is placed, used for some status information
+    // at the moment with the parameters used to create the table
+    function put_text() {
+	$('#result').append("Type: " + $('#ctype').val());
+	$('#result').append(", Clock: " + $('#CLK').val() + "MHz, max brp: " + max_brp);
+	$('#result').append(", SP: " + $('#SamplePoint').val());
+	$('#result').append("%, min tq: " + min_tq);
+	$('#result').append(", max tq: " + max_tq);
+	$('#result').append(", FD factor: " + $('#Factor').val());
+	$('#result').append(", SJW: " + sjw + "<br>");
+    }
+
+    // behind the table a text paragraph is placed,
+    // used for a link to a textual description of the table and controller
+    function put_link(CAN) {
+	var linktext =  "For the selected " + $('#ctype').val() + " table, ";
+	    linktext += "<a href=\"";
+        $('#links').empty();		// empty the paragraph text after table
+
+ 	linktext += CAN.linktext;
+
+	linktext += "\">look here</a>.";
+	$('#links').append(linktext);
+    }
+
+
+    // this function calculates special values for the fast bit time in CAN FD mode
+    // and adds  the table entries.
+    function calcFD(family) {
+	return "";
+    }
+
+    // calculate a table line, i is the bit rate index,
+    // if flag is true, it is not the index but the bit rate in kbit/s
+    function calcLine(i, flag) {
+	// has to be set in accordance to ctype, call a function here
+	var debug		= 0; // if set, enable debugging 
+	var maxtq = 0;	// wait for the firs valid tq and make it rue
+	debug = $('#debug').prop("checked");  // HTML Checkbox
+
+	// alert("Index = " + i);
+	// predefined bit rate table has max 16 entries
+	if ( flag ) {
+	    // if it is greater, it's not an index but the bitrate in kbit/s
+	    thisBittime = 1 / (i * 1000);
+	    thisBitrate = i;
+	    i = 1; // That is the color index for the table row, 
+	} else {
+	    thisBittime = bittime[i];
+	    thisBitrate = bitrate[i];
+	}
+	// alert("bittime = " + thisBittime);
+
+
+	// for all possible BRP - bit rate prescaler registers do
+	for (var brpreg = 0; brpreg < max_brp; brpreg++) {
+	var tableRow = "";		// return string
+	    var brp = brpreg + 1;
+	    var t_scl = 1 / ( $('#CLK').val() * 1e6) * brp;
+	    var ratio = thisBittime / t_scl; // real ratio 
+	    // get rratio, the integer part of ratio
+	    var rratio =  Math.round(ratio);  // to integer rounded ratio
+	    var accy;	// accuracy
+
+	    if ( debug == true) { 
+		$('#debugOutput').append(
+		    "<hr>"
+		    + "bit rate: " + thisBitrate + ": brp: " + brp 
+		    + "; ratio: " + ratio
+		    + "; rratio " + rratio
+		    + "; accy: " + (rratio - ratio)
+		    + "; min_tq: " + min_tq
+		    + "; max_tq: " + max_tq
+		    + "<br>"
+		    ); 
+	    }
+
+	    if ( rratio < min_tq ) break; // lohnt nicht weiter
+	    if ( rratio <= max_tq ) {    // max_tq 1+ tseg1_max + tseg2_max
+	
+		accy = rratio - ratio;
+		if ( Math.abs(accy) < accuracy ) {
+		    /* JavaScript is not as precise as enough */
+		    if ( Math.abs(accy) <  1.e-13) {
+			accy = 0.0;
+		    }
+
+		    if ( debug == true ) {
+			$('#debugOutput').append(
+			    "<tab indent='20'>accuracy OK: " + accy + "<br>"
+			    );
+		    }
+		    // ok, found a good divisor
+		    // set t_seg1 to sample_point (in %)
+		    /* comes from input */
+		    var sample_point = $('#SamplePoint').val();
+		    var t_seg1 = Math.round(rratio * sample_point / 100.) - 1;
+		    var t_seg2 = rratio - 1 - t_seg1;
+
+		    if ( debug == true ) $('#debugOutput').append(
+			"<tab indent=20>tseg1 " + t_seg1 + ", tseg2: " + t_seg2 + "<br>");
+
+		    // for TouCAN and FlexCAN the t_seg1 time must be splitted between
+		    // propagation delay - propseg - and phase_segment1 - pseg1 .
+		    // Both can be between 1 and 8.
+		    if ( haspropseg ) {
+			while ( 1 ) {
+			    if ( t_seg1 > 255 ) {    //tseg1_max 16
+				t_seg2 += 1;
+				t_seg1 -= 1;
+				continue
+			    } else {
+				break
+			    }
+			}
+			var pseg1;
+			var propseg;
+			if ( t_seg1 > 8 )  {
+			    pseg1 = 8;
+			    propseg = t_seg1 - pseg1;
+
+			} else {
+			    pseg1 = 1;
+			    propseg = t_seg1 - pseg1;
+			}
+		    }
+
+		    var real_sp = (t_seg1 + 1) * 100. / rratio;
+
+		    /* Do some generic simple tests on the results got so far.
+		     *
+		     * sample point at the beginning of a bit makes no sense
+		     */
+		    if (real_sp < 50) continue;
+	
+		    if (t_seg1 > max_tq1) {
+			if ( debug == true) { 
+			    $('#debugOutput').append("TSEG1 < max_tq1");
+			}
+			continue;
+		    }
+		    if ((t_seg2 < 1) || (t_seg2 > max_tq2)) {
+			if ( debug == true) { 
+			    $('#debugOutput').append("TSEG2 < 1 or > max");
+			}
+			continue;
+		    }
+	/* Use CAN.checkValues */
+		    if (CAN.checkValues(debug, thisBitrate, brp, propseg, t_seg1, t_seg2) == -1) {
+			// alert(" === Failed === ");
+			if ( debug == true) {
+		    		$('#debugOutput').append(" value check failed<br>");
+			} 
+			continue;
+		    }
+
+	   // in case got a valid bitrate / tq  pair
+	   maxtq += 1;
+
+		   // accuracy
+		   tableRow = "<td>" + accy.toPrecision(5)  + "</td>"
+
+		   // bittime[i]
+		   // we have here different information
+		   // propseg (propagation seg), t_seg1, t_seg2
+
+		   // real value of pre-scaler
+		   tableRow  += "<td align='right'>" + brp + "</td>"
+
+		   // real number of time quanta
+		   var rntq = (1 + t_seg1 + t_seg2);
+		   tableRow += "<td>" + rntq + "</td>"
+
+		   // real TSEG1 and TSEG2
+		   tableRow += "<td>" + t_seg1 + "</td><td>" + t_seg2 + "</td>";
+
+		   // sample point
+		   tableRow += "<td>" + real_sp.toFixed(1) + "</td>"
+
+		   /* -1, to be used as it is into the most BRP registers */
+		   brp = brp - 1;
+
+		   /* last  part is CAN controller specific
+		    * it is calculated by calling the following function
+		    * calcLineEnd(brp, propseg, pseg1, t_seg1, t_seg2);
+
+
+		    /* CAN.calcLineEnd delivers one value per register.
+		     * This can be only one 32 bit register value,
+		     * or two 8 byte registers,
+		     * or three or more.  
+		     */
+		    var regval = CAN.calcLineEnd (brp, propseg, pseg1, t_seg1, t_seg2);
+		    // alert("Array[" + regval + "]");
+		    // alert("Array["+ regval.length + "]");
+
+		    /* define the format of the register value colums
+		     * mono spaced */
+	var mono   = "<td align=\"right\" style=\"font-family:monospace; font-size:1.5em\">";
+
+		    /* add all register values as table columns.
+		     * Loop through the register value array  */
+		    for (var ii = 0; ii < regval.length; ii++) { 			
+			tableRow += mono + "&nbsp;0x";	    
+		 	tableRow += regval[ii];
+			tableRow += "</td>";
+		    }
+
+
+		   if (canFD) {
+		       tableRow += calcFD(family);
+		   }
+
+		    // determine a new table row selector
+		    // If using only one bitrate, we don't have to color it
+		    // differently. Also teher is no index i anymore. 
+		    var selector = brp.toString() + i;
+		    selector = 'tr' + selector;
+		    $('#mytab').append("<tr id=" + selector +">");
+		    selector = '#' + selector;
+		    // each bit rate gets an other bg color
+		    if(i % 2) {
+			$(selector).attr("bgcolor", std_tbl_bg1);
+		    } else {
+			$(selector).attr("bgcolor", std_tbl_bg2);
+		    }
+
+		    // emphasize results with 16 time quanta
+		    // For newer controllers, emphasize line with largest
+		    // number of tq for this bitrate
+		    if (maxtq == 1) {
+			$(selector).attr("bgcolor", emp_tbl_bg);
+		    } else {
+			if ( rntq == emphLine) { // use object attribute
+			    $(selector).attr("bgcolor", emp_tbl_bg);
+			}
+		    }
+		    // found valid parameters
+		    // print first colum with bitrate and add calculated table row
+		    $(selector).append("<td>" + thisBitrate + "</td>");
+		    $(selector).append( tableRow );
+		} // end for an entry with good accuracy
+		else {
+		    if (debug == true) { 
+		    $('#debugOutput').append(
+			"<tab indent=200>accuracy NOT OK: " + accy + "<br>");
+		    }
+		}
+	    }
+	} // end loop for all pre scaler values
+	return;
+    }
+
+    function do_calc() {
+	$('#tableIntroduction').empty();	// delete text before table
+	$('#mytab tr').remove();		// delete table
+	$('#debugOutput').empty();		// delete text after table
+	$('#result').empty();		// delete text after table
+       
+	$('#tableIntroduction').append(tableIntroduction);
+	$('#mytab').append(tableHeader);
+
+	// entry field to specify an arbitrary bit rate for calculation
+	bitRate = $('#bitRateEntry').val();
+	if (bitRate > 0) {
+	    // alert("bitrate = " + bitRate);
+	    // calculate for the only bitrate given
+	    calcLine(bitRate, true);
+	} else {
+	    // calculate table row for each of the bit times
+	    for (var i = 0; i < bittime.length; i++) {
+		// if(bitrate[i] == 0) continue; // skip fake entry
+		calcLine(i, false);
+	    }
+	}
+    }
+
+    // alert(window.location.search.substring(1));
+    //
+    var parseQueryString = function() {
+	var str = window.location.search;
+	var objURL = {};
+
+	str.replace(
+	    new RegExp( "([^?=&]+)(=([^&]*))?", "g" ),
+	    function( $0, $1, $2, $3 ){
+		objURL[ $1 ] = $3;
+	    }
+	);
+	return objURL;
+    };
+
+
+
+    // evaluate the CAN family select
+    // to arrange additional input - before - the calc.click
+    $('#ctype').click(function(e) {
+	// alert($('#ctype option:selected').text());    // delivers the text of the selected item
+	// alert($('#ctype option:selected').val());	  // delivers the assigned value
+	    family = $('#ctype option:selected').val();	// set family from combo box select
+	    $('#addButton').empty(); // remove Speed Factor entry
+	    switch (family) {
+	        // List all CAN FD capable device families
+		case "M_CANFFD":
+		case "IPMS":
+		case "IFI-CANFFD":
+		case "MultiCANFFD":
+		    alert("CAN FD data phase bit rate");
+		    $('#addButton').append(" CAN FD Speed Factor: <input type='text' name='Factor' size='2' value='1' id='Factor'/>");
+		    break;
+		default:
+		    // remove the CAN FD Speed Factor input field
+		    $('#addButton').empty();
+		    break
+	    }
+    });
+
+
+    // what happens if the "Request Table" button was clicked
+    function do_click() {
+        family = $('#ctype').val();	// set family from combo box select
+	CAN = set_family_parameters(family);
+	do_calc();
+	put_text();
+	put_link(CAN);
+    }
+
+    // get URL key=valuae parameters
+    var params = parseQueryString();
+    // alert(params["SJW"]);
+    if ((typeof(params["CLK"])) != "undefined") {
+	$('#CLK').val(params["CLK"]);
+    }
+    if ((typeof(params["SJW"])) != "undefined") {
+	$('#SJW').val(params["SJW"]);
+    }
+    if ((typeof(params["SamplePoint"])) != "undefined") {
+	$('#SamplePoint').val(params["SamplePoint"]);
+    }
+    if ((typeof(params["ctype"])) != "undefined") {
+	$('#ctype').val(params["ctype"]);
+    }
+    if ((typeof(params["calc"])) != "undefined") {
+	$('#calc').click();
+	// alert("click");
+	do_click();
+    }
+
+
+
+
+
+
+    // The 'Request table' Button
+    $('#calc').click(function() {
+	do_click();
+    });

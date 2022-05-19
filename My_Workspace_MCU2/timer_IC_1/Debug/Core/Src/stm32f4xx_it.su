@@ -1,0 +1,3 @@
+stm32f4xx_it.c:7:6:SysTick_Handler	8	static
+stm32f4xx_it.c:14:6:TIM2_IRQHandler	8	static
+stm32f4xx_it.c:20:6:TIM6_DAC_IRQHandler	8	static

@@ -1,0 +1,10 @@
+main.c:25:5:main	152	static
+main.c:82:6:SystemClockConfig	96	static
+main.c:172:6:SystemClock_Config_HSE	96	static
+main.c:264:6:GPIO_Init	32	static
+main.c:274:6:TIMER6_Init	8	static
+main.c:286:6:UART2_Init	8	static
+main.c:305:7:TIMER2_Init	24	static
+main.c:331:6:LSE_Configuration	8	static
+main.c:349:6:HAL_TIM_IC_CaptureCallback	16	static
+main.c:371:6:Error_handler	4	static

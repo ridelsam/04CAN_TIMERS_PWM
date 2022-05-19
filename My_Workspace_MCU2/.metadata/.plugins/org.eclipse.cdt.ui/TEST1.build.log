@@ -1,0 +1,34 @@
+22:09:55 **** Incremental Build of configuration Debug for project TEST1 ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:86:3: warning: implicit declaration of function 'MX_GPIO_Init'; did you mean 'HAL_GPIO_Init'? [-Wimplicit-function-declaration]
+   86 |   MX_GPIO_Init();
+      |   ^~~~~~~~~~~~
+      |   HAL_GPIO_Init
+../Core/Src/main.c:87:3: warning: implicit declaration of function 'MX_USART2_UART_Init' [-Wimplicit-function-declaration]
+   87 |   MX_USART2_UART_Init();
+      |   ^~~~~~~~~~~~~~~~~~~
+../Core/Src/main.c:89:3: warning: implicit declaration of function 'HAL_UART_Transmit' [-Wimplicit-function-declaration]
+   89 |   HAL_UART_Transmit(&huart2, (uint8_t*)user_data, strlen(user_data), HAL_MAX_DELAY);
+      |   ^~~~~~~~~~~~~~~~~
+../Core/Src/main.c:89:22: error: 'huart2' undeclared (first use in this function)
+   89 |   HAL_UART_Transmit(&huart2, (uint8_t*)user_data, strlen(user_data), HAL_MAX_DELAY);
+      |                      ^~~~~~
+../Core/Src/main.c:89:22: note: each undeclared identifier is reported only once for each function it appears in
+../Core/Src/main.c:89:40: error: 'user_data' undeclared (first use in this function)
+   89 |   HAL_UART_Transmit(&huart2, (uint8_t*)user_data, strlen(user_data), HAL_MAX_DELAY);
+      |                                        ^~~~~~~~~
+../Core/Src/main.c:89:51: warning: implicit declaration of function 'strlen' [-Wimplicit-function-declaration]
+   89 |   HAL_UART_Transmit(&huart2, (uint8_t*)user_data, strlen(user_data), HAL_MAX_DELAY);
+      |                                                   ^~~~~~
+../Core/Src/main.c:89:51: warning: incompatible implicit declaration of built-in function 'strlen'
+../Core/Src/main.c:21:1: note: include '<string.h>' or provide a declaration of 'strlen'
+   20 | #include "main.h"
+  +++ |+#include <string.h>
+   21 | 
+make: *** [Core/Src/subdir.mk:34: Core/Src/main.o] Error 1
+"make -j12 all" terminated with exit code 2. Build might be incomplete.
+
+22:09:56 Build Failed. 3 errors, 5 warnings. (took 1s.366ms)
+

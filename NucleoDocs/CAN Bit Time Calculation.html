@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)http://www.bittiming.can-wiki.info/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>CAN Bit Time Calculation</title>
+    
+    <meta name="Author" content="Heinz-Jürgen Oertel">
+    <meta name="Date" content="2021-06-09">
+    <meta name="keywords" content="CAN, CAN FD, bit timing, CAN controller, BTR,
+    NXP, Texas Instruments, Infineon, XMC4000, MultiCAN, ST, STM32, Microchip, Bosch, C_CAN, M_CAN, RS-CAN, RCAN, RCAN2, bxCAN, gridARM, Gridconnect, Kvaser">
+    <meta name="description" content="This page allows the on line calculation
+    of the content of the bit timing registers of different CAN controllers.
+    CAN - Controller Area Network">
+    <meta http-equiv="content-language" content="en-us">
+    <meta name="msvalidate.01" content="7466C03488598A93163D8ABBD995DC4A">
+    <meta name="google-site-verification" content="hnXTx1vPlkOCUKvELeSUajDDM458mXVBR2zmxYJN58Y">
+    <script language="JavaScript" type="text/javascript" src="./CAN Bit Time Calculation_files/tq.js.download"></script>
+    <link rel="stylesheet" href="./CAN Bit Time Calculation_files/style.css">
+    <link rel="shortcut icon" href="http://www.bittiming.can-wiki.info/favicon.ico" type="image/x-icon">
+    <link href="./CAN Bit Time Calculation_files/shariff.min.css" rel="stylesheet">
+    <script src="./CAN Bit Time Calculation_files/jquery.min.js.download"></script>
+    <script src="./CAN Bit Time Calculation_files/jquery.min.js(1).download"></script>
+    <script src="./CAN Bit Time Calculation_files/backb.js.download"></script>
+</head>
+<body>
+    <div id="container">
+    <div id="navigation">
+	<ul>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Allwinner">Allwinner</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Analog%20Devices">Analog Devices</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Atmel">Atmel</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Bosch">Bosch</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Freescale">Freescale</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Gridconnect">Gridconnect</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Holt">Holt Inc</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#IFI">IFI</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Infineon">Infineon</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Intel">Intel</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#IPMS">IPMS/CAST</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Kvaser">Kvaser CAN IP</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Microchip">Microchip</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Microsemi">Microsemi</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#nuvoton">Nuvoton</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#NXP">NXP</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Profichip">Profichip</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Renesas">Renesas</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Spansion">Spansion (Fujitsu)</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#STMicro">ST Microelectronics</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#TI">Texas Instruments</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Toshiba">Toshiba</a></li>
+	    <li><a href="http://www.bittiming.can-wiki.info/#Xilinx">Xilinx</a></li>
+	    <p></p>
+	    <li><a href="http://www.oertel-halle.de/imprint.html">Imprint</a></li>
+	</ul>
+    </div>
+
+    <div id="likes">
+	    <div class="shariff" data-orientation="vertical" data-backend-url="shariff-backend"><ul class="theme-color orientation-vertical"><li class="shariff-button twitter"><a href="https://twitter.com/intent/tweet?text=CAN%20Bit%20Time%20Calculation&amp;url=http://www.bittiming.can-wiki.info/" rel="popup" title="Bei Twitter teilen"><span class="share_text">tweet</span></a></li><li class="shariff-button facebook"><a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.bittiming.can-wiki.info%2F" rel="popup" title="Bei Facebook teilen"><span class="share_text">teilen</span></a></li><li class="shariff-button googleplus"><a href="https://plus.google.com/share?url=http://www.bittiming.can-wiki.info/" rel="popup" title="Bei Google+ teilen"><span class="share_text">+1</span></a></li><li class="shariff-button info"><a href="http://ct.de/-2467514" title="weitere Informationen"><span class="share_text">Info</span></a></li></ul></div>
+    </div>
+    <div id="header">
+	<h1>CAN Bit Time Calculation</h1>
+    </div>
+
+    <div id="content">
+
+<p> The following calculation sheet is mostly useful for classic CAN as defined
+in ISO-11898 before 2015. For the new CAN FD as defined in ISO-11898:2015 work is
+in Progress. <a href="https://www.can-cia.org/">CiA</a> provides the document CiA 601-3
+<b>CAN FD bit-timing recommendations</b>.
+</p>
+<p>
+By providing the <i>input clock frequency</i> feed into the CAN clock Pre-scaler, the desired <i>Sample Point</i> location
+and selecting the <i>CAN family</i>, this page calculates possible <b>register values</b> to program CAN controllers for typical <b>bit rates</b>.</p>
+<p>
+You can use the table in NXP SJA1000 mode (Like Philips or Intel) for controllers like:
+</p><ul class="list">
+    <li>Philips 82C200, <a href="http://www.bittiming.can-wiki.info/#NXP">NXP</a> SJA1000</li>
+    <li><a href="http://www.bittiming.can-wiki.info/#Intel">Intel</a> 82527 (and derived from it <a href="http://www.bittiming.can-wiki.info/#Infineon">Infineon</a> (Siemens) C167CR, C515C, XC161C, XC164C, TwinCAN SAK82C900)</li>
+    <li>Fujitsu (reported from Ralf Ebeling) and acknowledged by us for MB9054x </li>
+    <li>Dallas 80c390 Dual CAN </li>
+    <li>Toshiba TCAN </li>
+    <li><a href="http://www.bittiming.can-wiki.info/#Freescale">Freescale</a> msCAN (HCS12) and Frescale MCAN </li>
+    <li><a href="http://www.bittiming.can-wiki.info/#Holt">Holt Inc</a>, H3110 stand alone CAN controller (with transceiver) </li>
+</ul>
+<p>
+or select other CAN family types.
+The BOSCH C_CAN or D_CAN are often used in more modern implementations
+of different manufacturers( ST SPEAr, TI Sitara, ...)
+An explanation is given after the table (if calculation was called).
+</p><p>
+The table results in generic colums listing the values for number of tq,
+tseg1, tsegs, prescaler etc. and some hardware specifc register
+which can used to directly program the controller.
+</p>
+
+<form name="tqFormular">
+    <div style="background-color: #eee; padding: 10px; margin-bottom: 20px">
+	<div style="margin-bottom: 10px">
+	    <select name="ctype" id="ctype">
+		<option value="Allwinner">      AllwinnerCAN (BananaPi)</option>
+		<option value="BlackFin">       Analog Devices BlackFin/ADSP-CM40x</option>
+		<option value="AT91SAM9263">	Atmel AT91SAM9263/SAM7/SAMA5</option>
+		<option value="CANary">		Atmel CANary</option>
+		<option value="C_CAN">		Bosch C_CAN / D_CAN</option>
+		<option value="M_CAN">		Bosch M_CAN</option>
+		<option value="TouCAN">		NXP (Freescale) TouCAN</option>
+		<option value="FlexCAN">	NXP (Freescale) FlexCAN</option>
+		<option value="DSTni">		Gridconnect DSTni™</option>
+		<option value="IFI-CANFD-ISO">	IFI CAN FD arbitration, in ISO mode</option>
+		<option value="IFI-CANFFD-ISO">	IFI CAN FD fast data phase, ISO mode</option>
+		<option value="IFI-CANFD">	IFI CAN FD arbitration, non-ISO mode</option>
+		<option value="IFI-CANFFD">	IFI CAN FD fast data phase, non-ISO</option>
+		<option value="MultiCAN">	Infineon MultiCAN</option>
+		<option value="MultiCANFD">	Infineon MultiCAN FD (NBTR extended view)</option>
+		<option value="MultiCANFFD">	Infineon MultiCAN FD FNBTR data phase</option>
+		<option value="IPMS">		IPMS CAN-CTRL</option>
+		<option value="KVASER-CANFD-ISO">	Kvaser CAN FD arbitration, ISO mode</option>
+		<option value="PIC18" disabled="">	Microchip PIC18F</option>
+		<option value="dsPIC33">	Microchip dsPIC33</option>
+		<option value="PIC32">		Microchip PIC32</option>
+		<option value="Philips">	NXP SJA1000(Philips) or Intel</option>
+	        <option value="Profichip">	Profichip SMC1000</option>
+		<option value="AFCAN">		Renesas (NEC) AFCAN</option>
+		<option value="M16C29" disabled="">Renesas M16C/29</option>
+		<option value="M32C87">		Renesas M32C/87</option>
+		<option value="RCAN" disabled="">	Renesas H8SX/1725 RCAN</option>
+		<option value="RX62N">		Renesas RX62N/RX621</option>
+		<option value="RSCAN">		Renesas RZ Family with RS-CAN</option>
+		<option value="bxCAN">		ST Microelectronics bxCAN</option>
+		<option value="eCAN">		TI TMS320 family with eCAN</option>
+		<option value="Xilinx">		Xilinx XCAN</option>
+	    </select>
+	</div>
+	<div style="margin-bottom: 10px">
+	    Clock Rate <input type="number" name="CLK" size="8" value="8" id="CLK" autofocus=""> in MHz,
+	    <b>from 1 to 300</b>.
+	    Use the value of the clock rate at the first stage
+	    of the BaudRatePrescaler BTR,
+	    not the clock of the controller or crystal
+	    (typically for a 16 MHz clocked NXP SJA1000 use '8').
+	</div>
+
+	<div style="margin-bottom: 10px">
+	    Sample-Point at:
+	    <input type="text" name="SamplePoint" size="5" value="87.5" id="SamplePoint">
+	    in %, <b>from 50 to 90</b>
+	    (87.5 % is the preferred value used by CANopen and DeviceNet,
+	    75% is the default value for ARINC 825).
+	</div>
+	<div style="margin-bottom: 10px">
+	    SJW:
+	    <input type="number" name="SJW" size="5" value="1" min="1" max="127" id="SJW">
+	    numerical value <b>from 1 to ..</b>
+	    (1 is the preferred value used by CANopen and DeviceNet. The value is currently not used in all calculations,
+	    please look at the values used below the bit timing table.
+	</div>
+	<div>
+	    <p id="bitRate"></p>
+	    The table will be calculated for all CANopen defined bit rates. If
+	    you like to have the calculation for one special arbitrary bit rate,
+	    enter the the value here in kbit/s
+	    <input type="number" id="bitRateEntry" step="0.00000000001">
+	</div>
+
+	<div>
+	    <p id="addButton"></p>
+	</div>
+	<div style="margin-bottom: 10px">
+	    Debug:
+	    <input type="checkbox" id="debug">
+	    generates debugging information to the calculation after the table.
+	</div>
+	<div style="text-align: center">
+	    <input type="button" value=" Request Table  " id="calc" style="background-color: #3194b5; color: #fff">
+	</div>
+	<p>
+	A table can be requested by passing parameters on the http request line like
+	<br>
+	<code>
+	http://www.bittiming.can-wiki.info/?CLK=8&amp;ctype=Philips&amp;calc=1
+	</code>
+	With possible parameters: CLK=, SJW=, SamplePoint=, ctype=, calc=.
+	Where ctype
+	is the controller type.
+	If calc=1, calc is true, the table is immediately
+	calculated and displayed.
+
+    </p></div>
+</form>
+<hr>
+<p>
+Yellow background rows are settings with recommended values,
+with an bittime consisting of 16 time quanta tq (Number of time quanta). 
+At the time this tool was first developed,
+this seems to be the best value.
+in these days where we talk about CAN FD,
+as much as possible time quanta should be used to construct an bit time.</p>
+<p id="tableIntroduction"> </p>
+<table border="4" id="mytab">
+</table>
+<p id="debugOutput" style="font-size:80%"> </p>
+<p id="result">Selected:<br> </p>
+<p id="links"> </p>
+<div><p>
+    This table was generated using JavaScript and jQuery.
+    (An older version written in Tcl was first published in 1998).
+    </p><p style="font-weight:bold">
+    	Copyright © 2013-2021 Heinz-Jürgen Oertel</p>
+        All rights reserved.
+    <br>
+    <div style="font-style:italic">
+    If you find bugs in this service, please inform
+    <a href="mailto:hj.oertel@t-online.de?subject=CAN%20Bit%20Rate%20Calculator">Me</a>
+    <hr width="100%">
+    </div>
+</div>
+<p></p>
+
+<!--
+    the Freescale TouCAN/FlexCAN module,
+    the Texas Instruments TMS320 (TMS320F2407, TMS320F28xx),
+    the ATMEL CANary
+    the ATMEL AT91SAM9263 (for AT91SAM7A3 and AT91SAM7X, too),
+    the BOSCH C_CAN (C8051xxx, MB96xxx, STR7xx, STR9xx...),
+    the Microchip CAN/ECAN (PIC18F, dsPic30, dsPic33),
+    the Renesas M16C/29,
+    the Renesas M32C/87 CAN,
+    or the Renesas RCAN (H8SX).
+-->
+
+<div style="border: 1px solid #888; padding: 10px">
+    <div>
+	The question arises:
+	what exactly is the <b>sample point</b>?
+	The picture shows you the time segments of a
+	CAN-Bit as defined by ISO-11898.
+	<br><br>
+	<img src="./CAN Bit Time Calculation_files/bit_timing.png" alt="sampling point">
+
+	<table style="width: 60%; border: 1px solid #000; background-color: #eee" cellpadding="5">
+		<tbody><tr style="background-color:#ddd"><td>Sync_Seg:</td><td>1 tq</td></tr>
+		<tr><td>Prop_Seg + Phase_Seg1:</td><td>1 .. 16 tq</td></tr>
+		<tr style="background-color:#ddd"><td>Phase_Seg2:</td><td>1 .. 8 tq</td></tr>
+		<tr><td colspan="2">(Table calculation uses Prop_Seg = 0)</td></tr>
+	</tbody></table>
+	<br><br>
+
+	A detailed description about setting
+	the correct CAN bit timing is given
+	in a paper by Florian Hartwich and Armin Bassemir
+	by Robert Bosch:
+	<a href="http://www.oertel-halle.de/files/cia99paper.pdf" class="lnk">The Configuration of the CAN Bit Timing</a>.
+	And for CAN FD:
+	<a href="http://www.oertel-halle.de/files/icc14_2013_paper_Hartwich.pdf">Bit Time Requirements for CAN FD</a> Florian Hartwich, Robert Bosch GmbH<br>
+<br><br>
+
+	Basically the CAN bit period can be subdivided
+	into four time segments.
+	Each time segment consists of a number of
+	Time Quanta (tq). The Time Quanta is the smallest time unit
+	for all configuration values.<br>
+
+	<ul class="list">
+	    <li><b>SYNC_SEG</b> is 1 Time Quantum long.
+		It is used to synchronize the various bus nodes.</li>
+	    <li><b>PROP_SEG</b> is programmable to
+		be 1, 2,... 8 Time Quanta long.
+		It is used to compensate for signal
+		delays across the network.</li>
+	    <li><b>PHASE_SEG1</b> is programmable to
+		be 1,2, ... 8 Time Quanta long.
+		It is used to compensate for edge phase errors
+		and may be lengthened during resynchronization.</li>
+	    <li><b>PHASE_SEG2</b> (Seg 2) is the maximum of PHASE_SEG1
+		and the Information Processing Time long.
+		It is also used to compensate edge phase errors
+		and may be shortened during resynchronization.
+		For this the minimum value of PHASE_SEG2
+		is the value of SJW.</li>
+	    <li>Information Processing Time is
+		less than or equal to 2 Time Quanta long.</li>
+	    <li>The total number of Time Quanta has to be
+	        from 8 to 25. (Newer CAN controllers might allow other ranges.
+	        Check e.g. the BOSCH M_CAN.</li>
+	    <li>The <b>SJW</b> ist not (yet) considered by the tool. Values are always zero,
+	    which means the <b>Synchronization Jump Width</b> is 1 tq.
+	    If a value is entered, it is only copied to the appropriate register.</li>
+	    <li><b>SAM</b> or (SAMP) determines the number of CAN bus samples taken per bit time.
+	    and sometimes offered to be configured</li>
+	</ul><br>
+	The calculated table shows (PROP_SEG + PHASE_SEG1) as <b>Seg 1</b>.
+        <br>	
+	<b>accuracy</b> is the deviation, from the desired bit rate.
+        <p>	
+	Programming of the <b>Sample Point</b> allows optimizing the Bit Timing:
+	A late sampling for example allows a maximum bus length:
+	an early sampling allows slower rising and falling edges.
+	<br>The more difficult settings of bit timings and Sample Point are explained in 
+	<a href="http://www.can-cia.org/fileadmin/resources/documents/proceedings/2013_hell.pdf">
+	The physical layer in the CAN FD world</a>.
+	</p>
+    </div>
+</div>
+
+
+<!-- --------Begin CAN module descriptions ---------------------------- -->
+<div>
+    <a name="Allwinner" <="" a="">
+    <h2>Allwinner Technology</h2>
+    </a><a name="A20"></a><h3>Allwinner A20</h3>
+
+    Currently it is difficult to get a good documentation on the Allwinner A20 CAN module.
+    Two different sources show two different results.
+    The A20 manual Revision 1.0 (Feb 2013) chapter 6.16.3 shows a
+    16 bit Bit Timing Register.
+    <!--
+    <p>
+    <table border="1" frame="void">
+    <tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">???</td>
+	<td style="text-align:center;" colspan=1 >SAM</td>
+	<td style="text-align:center;" colspan=3 >TSEG2</td>
+	<td style="text-align:center;" colspan=4 >TSEG1</td>
+	<td style="text-align:center;" colspan=2 >SJW</td>
+	<td style="text-align:center;" colspan=6 >BRP</td>
+
+    </tr>
+    </table></p>
+    -->
+
+    <p>
+    The document "CAN Bus1.pdf" shows the same register picture while in section 1.5.6
+    the "CAN Bus Timing Register" description shows a 32 bit register which looks like:
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_BUS_TIME</td>
+	<td style="text-align:center;" colspan="8">-</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">PHSEG2</td>
+	<td style="text-align:center;" colspan="4">PHSEG1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="4">-</td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+    </tr>
+    </tbody></table>
+    <p>
+    This register layout was proved by an implementation of the
+    <a href="http://sourceforge.net/projects/can4linux/">can4linux</a> device driver.</p>
+
+</div>
+
+
+<div>
+
+    <a name="Analog Devices" <="" a="">
+    <h2> Analog Devices </h2>
+    </a><a name="BlackFin"></a><h3>BlackFin BF50x/BF60x</h3>
+
+    <p>16 bit Bit CAN_CLK register  setting BTR</p>
+    <table border="1" frame="void">
+    <tbody><tr style="text-align:center;">
+	<td width="5%" style="border:0;">&nbsp;</td>
+	<td width="5%" style="border:0;">15</td>
+	<td width="5%" style="border:0;">14</td>
+	<td width="5%" style="border:0;">13</td>
+	<td width="5%" style="border:0;">12</td>
+	<td width="5%" style="border:0;">11</td>
+	<td width="5%" style="border:0;">10</td>
+	<td width="5%" style="border:0;">9</td>
+	<td width="5%" style="border:0;">8</td>
+	<td width="5%" style="border:0;">7</td>
+	<td width="5%" style="border:0;">6</td>
+	<td width="5%" style="border:0;">5</td>
+	<td width="5%" style="border:0;">4</td>
+	<td width="5%" style="border:0;">3</td>
+	<td width="5%" style="border:0;">2</td>
+	<td width="5%" style="border:0;">1</td>
+	<td width="5%" style="border:0;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_CLK&nbsp;&nbsp;&nbsp;&nbsp;</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+
+    </tr>
+    </tbody></table>
+    <p>16 bit Bit CAN_TIMING register  setting SJW, SAM, TSEG2 and TSEG1</p>
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_TIMING</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+
+    </tr>
+    </tbody></table>
+    <a name="BlackFin"></a><h3>BlackFin BF70x</h3>
+    Analog Devices implemented the same CAN module as in the BlackFin BF50x series.
+    Therefore the same bit timing register calculation can be used.
+    But all registers are 32bit, with the highest 16 bits unused.
+
+    <a name="CM40x"></a><h3>ADSP-CM40x</h3>
+    <p>The ADSP-CM40x is a Mixed-Signal Control Processor
+    with ARM Cortex-M4 core. Analog Devices implemented the same CAN module
+    as in the BlackFin. Therefore the same bit timing register calculation can be used.
+</p></div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Atmel"></a>
+    <h2> ATMEL</h2>
+    <a name="AT91SAM9263"></a><h3>ATMEL AT91SAM9263</h3>
+
+    Only one 32 bit register is used.
+    Because of the minimum information processing time of 2tq (IPT=2tq) phase2 must be at least 2 tq.
+
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTP</td>
+	<td style="text-align:center;" colspan="7">reserved</td>
+	<td style="text-align:center;" colspan="1">SMP</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="7">BRP</td>
+	<td style="text-align:center;" colspan="2">reserved</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PROPAG</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PHASE1</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PHASE2</td>
+    </tr>
+    </tbody></table><p></p>
+    This register layout is the same for the
+    <ul><li>AT91SAM7A3
+	</li><li>the AT91SAM7X (SAM7X512/256/128)
+	</li><li>the SAMA5D3 Cortex®-A5 processor series
+	</li><li>the SAM3X, SAM3A, ARM® Cortex®-M3 based
+    </li></ul>
+    family.
+
+    <a name="STR750"></a><h3>ATMEL STR750</h3>
+    <p>STR750 ARM7TDMI-based microcontroller family implements Bosch <a href="http://www.bittiming.can-wiki.info/#C_CAN16">C-CAN</a>
+    Select BOSCH C_CAN to generate the bit timing values.
+
+    <a name="CANary"></a></p><h3>ATMEL CANary</h3>
+
+    FCAN is the input frequency used as table input.<br>
+    The CANary module used by ATMEL for the T89C51(AT89C51CC02) and CAN-AVR family,
+    uses three 8-bit registers to set-up the bit timing parameters
+    required by the CAN protocol - CANBT1, CANBT2 und CANBT3.
+    CANBT1 contains BRP,
+    the bit timing prescaler at bits 1-6, value range 0-63.
+    CANBT2 contains the programming time segment
+    PRS = PROP_SEG (Bit 1-3) and
+    CANBT3 contains the values for
+    PHS1 = PHASE_SEG1 (Bit 1-3) and
+    PHS2 = PHASE_SEG2 (Bit 4-6 in CANBT3).
+
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBT1</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+	<td style="text-align:center;" colspan="1">-</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBT2</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PRS</td>
+	<td style="text-align:center;" colspan="1">-</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBT3</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PHS2</td>
+	<td style="text-align:center;" colspan="3">PHS1</td>
+	<td style="text-align:center;" colspan="1">SMP</td>
+    </tr>
+    </tbody></table>
+
+    <p>
+    For 125 kbit/s and 16 tq at 16 (8)Mhz<br>
+    BRP = 3, PRS = 4, PHS1 = 7, PHS2 = 1
+
+</p></div>
+<!-- ------------------------------------------------------------------ -->
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Bosch"></a>
+    <h2> BOSCH</h2>
+    <a name="C_CAN"></a><h3>Bosch C_CAN</h3>
+
+    <p>The C_CAN CAN Controller from Bosch was implemented in different
+    CPUs.
+    Therefor our table show the 8 bit values BTR0 und BTR1.
+    But often the 16bit value is used:
+    <br>
+    Bittiming Register BTR = (BTR1 &lt;&lt; 8) | BTR0
+    <br></p>
+
+    <p>8 bit Bit Timing Register BTR1 and BTR0</p>
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">15</td>
+	<td width="10%" style="border:0; text-align:center;">14</td>
+	<td width="10%" style="border:0; text-align:center;">13</td>
+	<td width="10%" style="border:0; text-align:center;">12</td>
+	<td width="10%" style="border:0; text-align:center;">11</td>
+	<td width="10%" style="border:0; text-align:center;">10</td>
+	<td width="10%" style="border:0; text-align:center;">9</td>
+	<td width="10%" style="border:0; text-align:center;">8</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTR1</td>
+	<td style="text-align:center;">-</td>
+	<td style="text-align:center;" colspan="3">TSeg2</td>
+	<td style="text-align:center;" colspan="4">TSeg1</td>
+    </tr>
+    <tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTR0</td>
+	<td style="text-align:center;" colspan="2">SJW=0</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    </tbody></table>
+
+    <a name="C_CAN16"></a>
+    <p>16 bit Bit Timing Register  BTR</p>
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTR</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">TSeg2</td>
+	<td style="text-align:center;" colspan="4">TSeg1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+    <p> Besides the standard Bit Rate Prescaler BRP, the C_CAN module
+    has the BRP Extension Register BRPE.
+    By programming BRPE the Baud Rate Prescaler can be
+    extended to values up to 1023. The actual interpretation by the
+    hardware is that one more than the value programmed by BRPE (MSBs)
+    and BRP (LSBs) is used.
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BRPE</td>
+	<td style="text-align:center;" colspan="12">reserved</td>
+	<td style="text-align:center;" colspan="4">BRPE</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+</div>
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <a name="D_CAN"><h3>Bosch D_CAN</h3></a>
+    <p>The D_CAN CAN Controller from Bosch uses the same bit timing register model as the C_CAN module.
+    The Texas Instruments Sitara <a href="http://www.bittiming.can-wiki.info/#AM335x">AM335x</a> combines it in one 32 bit register DCANBTR.
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">DCANBTR</td>
+	<td style="text-align:center;" colspan="12">reserved</td>
+	<td style="text-align:center;" colspan="4">BRPE</td>
+	<td style="text-align:center;">-</td>
+	<td style="text-align:center;" colspan="3">TSeg2</td>
+	<td style="text-align:center;" colspan="4">TSeg1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+
+    </tr>
+    </tbody></table>
+    Combine the values as DCANBTR = (BRPE &lt;&lt; 16) + BTR
+
+
+</div>
+<!-- ------------------------------------------------------------------ -->
+    <a name="M_CAN"></a><h3>Bosch M_CAN</h3>
+
+    The Bosch M_CAN CAN controller module
+    ist the first one available supporting
+    <a href="http://www.can-wiki.info/doku.php?id=can_fd">CAN FD</a>
+    and therefore needs a second bit rate specified for the fast part of the CAN data frame.
+    Bit Timing is programmed via the Bit Timing &amp; Prescaler Register (BTP).
+    The CAN bit time may be programed in the range of 4 to 81 time quanta.
+    The CAN time quantum may be programmed in the range of 1 to 1024 m_can_cclk periods.
+    TSEG1 is the sum of Prop_Seg and Phase_Seg1. TSEG2 is Phase_Seg2.
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTP</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+	<td style="text-align:center;" colspan="2">reserved</td>
+	<td style="text-align:center;" colspan="6">TSEG1</td>
+	<td style="text-align:center;" colspan="4">TSEG2</td>
+	<td style="text-align:center;" colspan="4">SJW</td>
+    </tr>
+    </tbody></table><p></p>
+
+    For the faster bit time in CAN FD mode, M_CAN maintains the aditional
+    <i>Fast Bit Timing &amp; Prescaler Register</i> (FBTP).
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">FBTP</td>
+	<td style="text-align:center;" colspan="3">res</td>
+	<td style="text-align:center;" colspan="5">TDCO</td>
+	<td style="text-align:center;" colspan="1">TDC</td>
+	<td style="text-align:center;" colspan="2">res</td>
+	<td style="text-align:center;" colspan="5">FBPR</td>
+	<td style="text-align:center;" colspan="4">res</td>
+	<td style="text-align:center;" colspan="4">FTSEG1</td>
+	<td style="text-align:center;" colspan="1">res</td>
+	<td style="text-align:center;" colspan="3">FTSEG2</td>
+	<td style="text-align:center;" colspan="2">res</td>
+	<td style="text-align:center;" colspan="2">FSJW</td>
+    </tr>
+    </tbody></table><p></p>
+
+    <p>Besides the typical  values, prefixed with 'F' for 'fast', like FBRP, FTSEG1, FTSEG2
+    and FSJW, it has values for the <i>Transceiver Delay Compensation Offset</i> TDCO
+    and a disable/enable bit for <i>Transceiver Delay Compensation</i> TDC.
+    <br>
+    The <i>Fast Baud Rate Prescaler</i> has valid values from 0 to 31. FTSEG1 from 1 to 15,
+    and FTSEG2 from 0 to 7.
+    For all of them the actual interpretation by the hardware of this values
+    is such that one more than the value programmed here is used.
+    <b>Note</b>: The bit rate configured for the CAN FD data phase via FBTP
+    must be higher or equal to the bit rate configured for the arbitration phase via BTP.</p>
+    <p>To simplify programming the fast bit rate, the programm allows only the fast bit rate to be
+    multiple of the arbitration bit rate.</p>
+
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Freescale" <="" a="">
+    <h2> Freescale is now (since 2015) NXP</h2>
+    </a><p><a name="Freescale" <="" a="">
+    The CAN protocol as such and the Freescale CAN implementations MCAN, TOUCAN, MSCAN08 and MSCAN12
+    are described in
+    </a><a href="http://www.freescale.com/files/microcontrollers/doc/data_sheet/BCANPSV2.pdf">this paper</a>.
+    The Freescale application note <a href="http://www.freescale.com/files/microcontrollers/doc/app_note/AN1798.pdf">
+	discusses the <i>CAN Bit Timing Requirements</i>.
+    </a></p><a href="http://www.freescale.com/files/microcontrollers/doc/app_note/AN1798.pdf">
+
+    </a><a name="TouCAN"></a><h3>Freescale TouCAN/FlexCAN</h3>
+
+    The TouCAN module  uses three 8-bit registers to set-up
+    the bit timing parameters required by the CAN protocol.
+    Control registers 1 and 2 (CANCTRL1, CANCTRL2)
+    contain the
+    PROPSEG = PROP_SEG( Bit 0-3 in CANCTRL1),
+    PSEG1 = PHASE_SEG1 (Bit 3-5),
+    PSEG2 = PHASE_SEG2 (Bit 0-2),
+    und the RJW (Bit 6-7 in CANCTRL2) fields
+    which allow the user to configure the bit timing parameters.
+    The prescaler divide register (PRESDIV) allows the user
+    to select the ratio used to derive the clock from
+    the system clock.
+    According to AN1776 the TouCAN module needs at least 9 time quante per bit.
+    <br>
+    The more modern FlexCAN implementations are using the 32 bit <b>Control Register</b> (CTRL)
+    to program bit timing, but much more.
+    CTRL contains as well the bit fields PRESDIV (8 bit pre-scaler), PROPSEG ( 3 bit),
+    PSEG1 ( 3 bit) and PSEG2 (3 bit).
+    <br>
+    For the position of the sample point only the relation
+    (SYNC_SEG + PROP_SEG + PHASE_SEG1) / (PHASE_SEG2) is important.
+    The absolute value of PROPSEG = PROP_SEG is
+    rather of academic interest and is not calculated by the program.
+    The values for PRESDIV, PROPSEG, PSEG1 and PSEG2 are calculated.
+
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <a name="msCAN12"></a><h3>Freescale msCAN08, msCAN12 and MCAN</h3>
+
+    The msCAN module  uses two 8-bit registers to set-up
+    the bit timing parameters required by the CAN protocol.
+    <p>8 bit Bit Timing Register CANBTR1 and CANBTR0
+    can be calculated selecting NXP SJA1000.
+    </p>
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBTR1</td>
+	<td style="text-align:center;">SAMP=0</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+    </tr>
+    <tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBTR0</td>
+	<td style="text-align:center;" colspan="2">SJW=0</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    </tbody></table>
+
+    For Freescales MCAN use CANBTR1 for register CBT1  (with TSEG2 and TSEG1)
+    and CANBTR0 for CBT0 (with BRP and SJW).
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Gridconnect"></a><h2>Gridconnect</h2>
+    <a name="Grid_DSTni"></a><h3>DSTni ™</h3>
+    Bit rate configuration is done by two 16bit CAN configuration registers
+    <i>Bit Rate Divisor</i> and <i>Configuration</i>.
+
+    <p>16 bit Bit Rate Divisor register setting BR</p>
+    <table border="1" frame="void">
+    <tbody><tr style="text-align:center;">
+	<td width="8%" style="border:0;">&nbsp;</td>
+	<td width="5%" style="border:0;">15</td>
+	<td width="5%" style="border:0;">14</td>
+	<td width="5%" style="border:0;">13</td>
+	<td width="5%" style="border:0;">12</td>
+	<td width="5%" style="border:0;">11</td>
+	<td width="5%" style="border:0;">10</td>
+	<td width="5%" style="border:0;">9</td>
+	<td width="5%" style="border:0;">8</td>
+	<td width="5%" style="border:0;">7</td>
+	<td width="5%" style="border:0;">6</td>
+	<td width="5%" style="border:0;">5</td>
+	<td width="5%" style="border:0;">4</td>
+	<td width="5%" style="border:0;">3</td>
+	<td width="5%" style="border:0;">2</td>
+	<td width="5%" style="border:0;">1</td>
+	<td width="5%" style="border:0;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:left;">CAN<br>bit rate Div.</td>
+	<td style="text-align:center;" colspan="5">reserved</td>
+	<td style="text-align:center;" colspan="11">BR[10:0]</td>
+
+    </tr>
+    </tbody></table>
+    <p>16 bit Bit Configuration register  setting SJW, SAM, TSEG2 and TSEG1</p>
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="8%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:left;">CAN<br>tsegs</td>
+	<td style="text-align:center;" colspan="1">OVR<br>MSG</td>
+	<td style="text-align:center;" colspan="3">TS2</td>
+	<td style="text-align:center;" colspan="4">TS1</td>
+	<td style="text-align:center;" colspan="3">0</td>
+	<td style="text-align:center;" colspan="1">AUTO<br>RES</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="1">EDGE<br>MODE</td>
+
+    </tr>
+    </tbody></table>
+    TS1=0 and TS1=1 are not allowed;
+    TS2=0 is not allowed;
+    TS2=1 is only allowed in direct sampling mode SAM=0.
+
+
+    <a name="Grid_ARM"></a><h3>gridARM</h3>
+    Bit rate configuration is done by one 32bit CAN configuration register <i>CAN_BR</i>.
+    Prescaler value is 7 bit, 1 to 128. 
+
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_BR</td>
+	<td style="text-align:center;" colspan="7">reserved</td>
+	<td style="text-align:center;" colspan="1">SMP</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="7">BRP</td>
+	<td style="text-align:center;" colspan="2">reserved</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PROPAG</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PHASE1</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">PHASE2</td>
+    </tr>
+    </tbody></table><p></p>
+    <p>This is the same register layout as it can be found in older ATMEL controllers,
+    like the SAM7 or SAMA5 series. To calculate these values, select 
+    <a href="http://www.bittiming.can-wiki.info/#AT91SAM9263">
+    <i>Atmel AT91SAM9263/SAM7/SAMA5</i>
+    </a>.
+
+</p></div>
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Holt"></a><h2>Holt Inc.</h2>
+    Holt Inc. is a provider of analog and mixed signal IC data bus solutions to the avionics industry.
+    The HI-3110 ARINC 825 and CANaerospace Standards compatible controller has an SPI host interface.
+    The bit timing registers are compatible with the NXP <a href="http://www.bittiming.can-wiki.info/#SJA1000">SJA1000</a> CAN.
+    Select this type for calculation of the register values.
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="IFI"></a><h2>IFI - Ingenieurbüro Für Ic-Technologie</h2>
+    IFI is providing FPGA IP cores. The latest one is able to handle enhanced CAN FD protocol.
+    Two 32bit registers are used for setting the arbitration and data bit rate.
+    Both with the same structure.
+    <p>
+    With the migration from CAN FD non-ISO to the latest ISO standard, IFI
+    changed the Bit-Timing generation and the related register compilation.
+
+    The non-ISO registers, now know as 
+    <b>Timing slow and fast used 4_12_6_6_bit</b>
+    </p><table border="1" frame="void" width="100%">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;"></td>
+	<td style="text-align:center;" colspan="4">SJW</td>
+	<td style="text-align:center;" colspan="12">prescale</td>
+	<td style="text-align:center;" colspan="2"></td>
+	<td style="text-align:center;" colspan="6">time A</td>
+	<td style="text-align:center;" colspan="2"></td>
+	<td style="text-align:center;" colspan="6">time B</td>
+    </tr>
+    </tbody></table><p></p>
+    <p>
+    The CAN FD ISO Bit Timing uses the same registers, now known as
+    <b>Timing slow and fast used: 7_9_8_8_bit</b>
+
+    </p><table border="1" frame="void" width="100%">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;"></td>
+	<td style="text-align:center;" colspan="7">SJW</td>
+	<td style="text-align:center;" colspan="9">prescale</td>
+	<td style="text-align:center;" colspan="8">time A</td>
+	<td style="text-align:center;" colspan="8">time B</td>
+    </tr>
+    </tbody></table><p></p>
+
+
+
+
+    Where <b>time A</b> is the segment before the sample point and <b>time B</b> after.
+    <p></p>
+    An additional register at address 0x001c is used to set the transmitter delay.<p></p>
+
+</div>
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Infineon"></a><h2>Infineon</h2>
+
+    <a name=""></a><h3>Older 8 and 16 bit and stand alone SAK82C900 </h3>
+
+    The bit timing register model used in the older (Siemens) controllers like C167CR, C515C, XC161C, XC164C, TwinCAN SAK82C900
+    is very close to the <a href="http://www.bittiming.can-wiki.info/#SJA1000">SJA1000</a>, Please use the values calculated for it.
+
+    <a name="MultiCAN"></a><h3>MultiCAN and MultiCAN+</h3>
+    The latest CAN controller family implemented in Infineon controllers is called
+    <a href="http://www.infineon.com/cms/en/product/promopages/aim-mc/MultiCAN.html">MultiCAN</a>
+    (or <a href="http://www.ip-extreme.com/IP/multican.shtml">here</a>).
+    The ARM Cortex-M4 XMC4000, Tricore TC1130, AUDO or XC800 families are examples
+    using this CAN core.
+    <p>
+    On the XMC4500 the 32bit Node Bit Timing Register NBTRx
+    contains all parameters to set up the bit timing for the CAN transfer
+
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">NBTR</td>
+	<td style="text-align:center;" colspan="16">reserved 0</td>
+	<td style="text-align:center;">DIV8</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    </tbody></table>
+    <a name="MultiCANFD"></a><h3>MultiCAN+ with extended view to CAN FD</h3>
+    <p>
+    In newer MultiCAN implementations supporting CAN FD
+    the number of possible tq per bit was increased when CAN FD is used.
+    This results in larger values for TSEG[12].
+    The NBTR register with extended view (NBTEVR) when used with NCR.FDEN = 1.
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">NBT&nbsp;&nbsp;<br>EVR</td>
+	<td style="text-align:center;" colspan="4">reserved 0</td>
+	<td style="text-align:center;" colspan="6">TSEG1</td>
+	<td style="text-align:center;" colspan="1">0</td>
+	<td style="text-align:center;" colspan="5">TSEG2</td>
+	<td style="text-align:center;" colspan="1">DIV8</td>
+	<td style="text-align:center;" colspan="3">0</td>
+	<td style="text-align:center;" colspan="4">SJW</td>
+	<td style="text-align:center;" colspan="2">0</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    </tbody></table>
+    <p>The Bit <b>DIV8</b> when set is used to divide the Prescaler Clock by 8.
+
+    </p><p>The content for the <i>The Fast Node Bit Timing Register</i>, <b>FNBTRx</b>,
+    can be calculated using the "MultiCAN FD FNBTR" selection.
+
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">FNBTR</td>
+	<td style="text-align:center;" colspan="17">reserved 0</td>
+	<td style="text-align:center;" colspan="3">FTSEG2</td>
+	<td style="text-align:center;" colspan="4">FTSEG1</td>
+	<td style="text-align:center;" colspan="2">FSJW</td>
+	<td style="text-align:center;" colspan="6">FBRP</td>
+    </tr>
+    </tbody></table>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Intel"></a><h2>Intel</h2>
+
+    The old Intel 82527 is not any more manufactured by Intel.
+    But some chips exist to substitute it.
+    The bit timing register is following the NXP <a href="http://www.bittiming.can-wiki.info/#SJA1000">SJA1000</a> model.
+    <br>
+    Intel has a new chip, Intel® Platform Controller Hub EG20T. It has Bosch
+    <a href="http://www.bittiming.can-wiki.info/#D_CAN">D_CAN</a> as CAN module.
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="IPMS"></a><h2>IPMS / CAST</h2>
+    <p>IPMS develops and CAST Inc. distributes an CAN IP core called <b>CAN CTRL</b>
+    which is already able to use the CAN FD mode.</p>
+    <p>Five bit timing registers are used to configure the bit rate for the arbitration phase (S-slow phase)
+    and data phase (F-fast phase).
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BITTIME_0</td>
+	<td style="text-align:center;" colspan="2">F_SJW</td>
+	<td style="text-align:center;" colspan="6">S_Seg_1</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BITTIME_1</td>
+	<td style="text-align:center;" colspan="3">F_Seg2</td>
+	<td style="text-align:center;" colspan="5">S_Seg_2</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BITTIME_2</td>
+	<td style="text-align:center;" colspan="4">F_Seg_1</td>
+	<td style="text-align:center;" colspan="4">S_SJW</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">S_PRESC</td>
+	<td style="text-align:center;" colspan="8">S_PRESC</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">F_PRESC</td>
+	<td style="text-align:center;" colspan="8">F_PRESC</td>
+    </tr>
+    </tbody></table>
+    <p>This core divides the bit timing into only two parts:
+    The first part called Segment 1 includes the synchronization segment,
+    propagation segment and phase_seg1
+    and the second part called Segment 2 is equal to phase_seg2.</p>
+    <p>Currently only the Slow (Classical CAN) bit rate is supported by the calculator.</p><p>
+
+</p></div>
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Kvaser"></a><h2>Kvaser</h2>
+
+    Kvaser developed there own CAN IP core which is capable of maintaining
+    classic CAN as well as CAN FD.
+    <p>Unfortunately Kvaser did not provide a detailed CAN register or other
+    interface definition for the CAN IP core. One interface board with up to 4
+    CAN channels manufactured by Kvaser itself is the PCIEFD.
+    </p><p>
+ Nominal and Data Phase Bit Timing (KCAN_BTRN/BTRD)
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTRN</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="5">TSEG2</td>
+	<td style="text-align:center;" colspan="9">TSEG1</td>
+	<td style="text-align:center;" colspan="4">SJW</td>
+	<td style="text-align:center;" colspan="13">BRP</td>
+    </tr>
+    </tbody></table>
+    <p></p><ul>
+	<li><b>TSEG2</b> Time Segment 2 setting. Valid range 0..31,  TSEG2 = tseg2-1
+	</li><li><b>TSEG1</b> Time Segment 2 setting. Valid range 0..511,  TSEG1 = tseg1-1
+	</li><li><b>SJW</b> Sync Jump Width setting. Valid range for BTRN and BTRD is 0..15,  SJW=tsjw – 1
+	</li><li><b>BRP</b> Bit Rate Prescaler setting. Valid range 0..8191 for BTRN. Valid range 0..8191 for BTRD
+	    when transmitter delay compensation is disabled and
+	    range 0..1 when TRDCE is enabled.  BRP=nbrp-1
+    </li></ul>
+
+
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Microchip"></a><h2>Microchip</h2>
+    <a name="PIC18F"></a><h3>Microchip PIC18F</h3>
+
+    Microchip use in the PIC18F CPU three 8bit registers.
+    BRGCON1 contains the Prescaler,
+    BRGCON2 the Propagation and Phase Segment 1 bits and
+    BRGCON3 the Phase Segment 2 bits.
+    The last one is only active, if SEG2PHTS (BRGCON2, bit7) is set.
+    <p>This device, as other of the smaller PIC devices, is not very suitable
+    to implement CANopen. Therefore, bit timing calculation is not yet
+    implemented for it. If someone is interested in using the Timing calculator
+    for simple CAN applications, feel free to implement it here (or pay me to do
+    it).
+
+
+    <a name="dsPIC33"></a></p><h3>Microchip dsPIC33F</h3>
+    <p>
+ Enhanced Controller Area Network (ECAN™)
+The total number of time quanta in a nominal bit time must be programmed between
+8 tq and 25 tq.
+
+Note 1: (Propagation Segment + Phase Segment 1) must be greater than or equal to the
+length of Phase Segment 2.
+
+Values should be used wth SJW = 1
+<br>
+Example 21-8: CAN Bit Timing Calculation Example (p.58).
+ Step 1: Calculate the time quantum frequency (FCY = 40 MHz).
+If FBAUD = 1 Mbps, and number of time quanta N = 20, then FTQ = 20 MHz.
+ max prb 64.
+
+    </p><p>
+    CiCFG1 ECAN™ Baud Rate Configuration Register 1
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CiCFG1</td>
+	<td style="text-align:center;" colspan="8">unimplemented 0</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+
+    </tr>
+    </tbody></table>
+    Values should be used wth SJW = 0, wich is 1 tq.
+
+    <p>
+    CiCFG2 ECAN™ Baud Rate Configuration Register 2
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CiCFG2</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="1">WAK<br>FIL</td>
+	<td style="text-align:center;" colspan="3">-</td>
+	<td style="text-align:center;" colspan="3">SEG2PH</td>
+	<td style="text-align:center;" colspan="1">SEG2<br>PHTS</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">SEG1PH</td>
+	<td style="text-align:center;" colspan="3">PRSEG</td>
+
+    </tr>
+    </tbody></table>
+    PRSEG - propagation segment
+    <br>
+    WAK - is not considered in the calculation, add the bit if needed.
+    <br>
+    WAKFIL: Select CAN Bus Line Filter for Wake-up bit
+    <br>
+    1 = Uses CAN bus line filter for wake-up
+    <br>
+    0 = CAN bus line filter is not used for wake-up
+
+</div>
+
+<div>
+    <a name="PIC32"></a><h3>Microchip PIC32 </h3>
+    The information is valid for the PIC32MX5/6/7 as well as for the latest PI32MZ,
+    Embedded Connectivity (EC) family.
+    The PIC32 family's bit rate prescaler is only programmable between 1 to 64.
+    According to the <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/61154C.pdf">manual</a>
+    the time quanta is derived by dividing the clock frequency by the factor of two <b>after</b>
+    the bit rate prescaler. 
+    <br>CAN Baud Rate Configuration Register CiCFG is a 32 bit register.
+    It looks like the combination of the two registers used in the <a href="http://www.bittiming.can-wiki.info/#dsPIC">dsPIC33</a>.
+    <br>
+    SEG2PHTS Phase Segment 2 Time Select bit is set to 1, which means
+    Phase Buffer Segment SEG2PH is freely programmable. SAM = SJW = WAKFIL = 0.
+    <p>
+    F<sub>SYS</sub> is what you have to enter in the <i>Clock Rate</i> field.
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CiCFG</td>
+	<td style="text-align:center;" colspan="9">0</td>
+	<td style="text-align:center;" colspan="1">WAK<br>FIL</td>
+	<td style="text-align:center;" colspan="3">0</td>
+	<td style="text-align:center;" colspan="3">SEG2PH</td>
+	<td style="text-align:center;" colspan="1">SEG2<br>PHTS</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">SEG1PH</td>
+	<td style="text-align:center;" colspan="3">PRSEG</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    </tbody></table>
+
+
+<div>
+    <a name="MCP2510"></a><h3>Microchip MCP2510</h3>
+
+    For anybody using MicroChip's MCP2510, Intrepics has a free
+    <a href="http://www.intrepidcs.com/support/mbtime.htm" target="_blank" class="lnk">Tool</a>
+    to get the timing bits.
+    It is unfortunately a Windows™ only program.</div>
+
+    The stand alone controller has three registers to configure the bit timing of the CAN controller.
+    <ul>
+	<li>CNF1 controls the bit rate prescaler and the sync jump with.
+	</li><li>CNF2 the propagation segment, phase segmant 1,
+	    SAM bit which controls the number of samples taken at the sample point.
+	</li><li>CNF3 with phase segment 2, Start-of-Frame signal bit and  Wake-up Filter bit.
+	</li></ul>
+
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CNF1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CNF2</td>
+	<td style="text-align:center;" colspan="1">BTL</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">PHSEG1</td>
+	<td style="text-align:center;" colspan="3">PRSEG</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CNF3</td>
+	<td style="text-align:center;" colspan="1">SOF</td>
+	<td style="text-align:center;" colspan="1">WAKFIL</td>
+	<td style="text-align:center;" colspan="3">-</td>
+	<td style="text-align:center;" colspan="3">PHSEG2</td>
+    </tr>
+    </tbody></table>
+    <p>
+    TODO: calculation is done using BTLMODE = 1.
+    The length of phase segment 2 is determined by the PHSEG2 bits of CNF3.
+<!-- ------------------------------------------------------------------ -->
+
+</p><div>
+    <hr>
+    <a name="Microsemi"></a><h2>Microsemi</h2>
+    <a name="SmartFusion2"></a><h3>SmartFusion2</h3>
+
+    The CAN configuration register CAN_CONFIG is a 32-bit register
+    that is used to configure the functionality of the CAN controller.
+    
+
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_CONFIG</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="15">CFG_BITRATE</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="1">ECR<br>MODE</td>
+	<td style="text-align:center;" colspan="1">SWAP<br>ENDIAN</td>
+	<td style="text-align:center;" colspan="1">CFG<br>ARBITER</td>
+	<td style="text-align:center;" colspan="4">CFG_TSEG1</td>
+	<td style="text-align:center;" colspan="3">CFG_TSEG2</td>
+	<td style="text-align:center;" colspan="1">AUTO<br>RESTART</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">SAMPLING<br>MODE</td>
+	<td style="text-align:center;" colspan="1">EDGE<br>MODE</td>
+    </tr>
+    </tbody></table>
+
+
+
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="NXP"></a><h2>NXP</h2>
+
+    <p>NXP is one of the manufacturers still producing a stand alone CAN controller,
+    the famous SJA1000.
+    But also many microcontrollers with integrated CAN
+    and with the LPC11C22 and LPC11C24 parts  that include an on-chip,
+    high-speed CAN transceiver.
+    </p>
+
+    <a name="SJA1000"></a><h3>NXP SJA1000 (NXP, Intel 82527, Infineon TwinCAN .....</h3>
+
+    <p>The SJA1000 uses only two 8-bit registers to set-up
+    the bit timing parameters required by the CAN protocol.
+    One register BTR0 containing the value
+    of the bit timing prescaler and the other for the values
+    of PHASE_SEG1 and PHASE_SEG2.
+    PHASE_SEG1 is used for programming both (PROP_SEG + PHASE_SEG1)
+    according CAN specification.
+    <br><br>
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTR0</td>
+	<td style="text-align:center;" colspan="2">SJW=0</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+    </tr>
+    <tr>
+	<td width="10%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="10%" style="border:0; text-align:center;">7</td>
+	<td width="10%" style="border:0; text-align:center;">6</td>
+	<td width="10%" style="border:0; text-align:center;">5</td>
+	<td width="10%" style="border:0; text-align:center;">4</td>
+	<td width="10%" style="border:0; text-align:center;">3</td>
+	<td width="10%" style="border:0; text-align:center;">2</td>
+	<td width="10%" style="border:0; text-align:center;">1</td>
+	<td width="10%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BTR1</td>
+	<td style="text-align:center;">SAMP=0</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+    </tr>
+    </tbody></table>
+
+    <p>For 125 kbit/s and 16 tq at 16 (8)Mhz - sja100<br>
+    BTR0 = 3, BTR1 = 1C.<br>
+    For 125 kbit/s and 16 tq at 20 (10)Mhz - C515C<br>
+    BTR0 = 4, BTR1 = 1C
+
+    <a name="LPC11"></a></p><h3>LPC11Cx2/Cx4</h3>
+    <p>The LPC11Cx2/Cx4 are ARM Cortex-M0 based, integrating a BOSCH
+    <a href="http://www.bittiming.can-wiki.info/#C_CAN">C_CAN</a> module.
+
+
+</p></div>
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="nuvoton"></a><h2>nuvoton</h2>
+	<p>
+	<a href="http://www.nuvoton.com/">nuvoton</a> manufactures the ARM Cortex™-M0 based NuMicro™
+	family. The two automotive members NUC130/NUC140 have one
+    BOSCH <a href="http://www.bittiming.can-wiki.info/#C_CAN">C_CAN</a> module implemented. Select BOSCH C_CAN
+    to generate the bit timing values.
+</p></div>
+
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Profichip"></a><h2>Profichip</h2>
+	<p>
+	<a href="http://www.profichip.com/">Profichip</a>
+	manufactures the <b>SMC1000</b> ARM9 based SoC with two CAN controllers
+       	and dual Ethernet MAC.
+
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">BitTime</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+	<td style="text-align:center;" colspan="8">BRP</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="8">reserved</td>
+
+    </tr>
+    </tbody></table><p></p>
+</div>
+
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Renesas"></a><h2>Renesas</h2>
+
+    <a name="RX62N"></a><h3>Renesas RX62N/RX621</h3>
+
+    The RX62N/RX621 Group implements one channel of the CAN module.
+    Bit timing is done writing to the CAN0 Bit Configuration Register (CxBCR).
+    CxBCR consists of 24 bits.
+    A 32-bit read/write access should be performed carefully
+    not to rewrite bits b7 to b0.
+
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CxBCR</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+	<td style="text-align:center;" colspan="2"></td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+	<td style="text-align:center;" colspan="2"></td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1"></td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="8">reserved</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+    <a name="AFCAN"></a><h3>Renesas (NEC) V850 µPD70F34x</h3>
+    <p>
+    This family of 32 bit controllers is an originally NEC based product.</p>
+    <p>Besides the bit rate prescaler, the  8 bit <b>CnGMCS</b> - CANn global clock selection register
+    is used to select the CAN module system clock. It provides the CAN module clock by dividing
+    the CAN clock by 1 to 16 (default).</p>
+    <p>The 8 bit <b>CnBRP</b> - CANn module bit rate prescaler register
+    holds the 8 bit bit rate prescaler.</p>
+    <p>The 16 bit <b>CnBTR</b> - CANn module bit rate register is used
+    to program the phase segments phase1 and phase2.
+    </p>
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CnBTR</td>
+	<td style="text-align:center;" colspan="2">-</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">-</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+
+    </tr>
+    </tbody></table>
+
+    <a name="M32C87"></a><h3>Renesas (Mitsubishi) M32C/87</h3>
+
+    16bit CANi Configuration Register (CiCONR Register) (i = 0, 1) contains
+    SAM,
+    3 bit  Propagation time segment PTS,
+    3 bit Phase buffer segment 1 PBS1,
+    3 bit Phase buffer segment 2  PBS2, SJW.
+    <br>
+    8bit CANi Baud Rate Prescaler (CiBRP Register) (i = 0, 1)
+    divides by 1 to 256.
+    <br>
+    Register value restrictions: PTS 1-8, PBS1 2-8, PBS2 2-8.
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="5%" style="border:0; text-align:center;">15</td>
+	<td width="5%" style="border:0; text-align:center;">14</td>
+	<td width="5%" style="border:0; text-align:center;">13</td>
+	<td width="5%" style="border:0; text-align:center;">12</td>
+	<td width="5%" style="border:0; text-align:center;">11</td>
+	<td width="5%" style="border:0; text-align:center;">10</td>
+	<td width="5%" style="border:0; text-align:center;">9</td>
+	<td width="5%" style="border:0; text-align:center;">8</td>
+	<td width="5%" style="border:0; text-align:center;">7</td>
+	<td width="5%" style="border:0; text-align:center;">6</td>
+	<td width="5%" style="border:0; text-align:center;">5</td>
+	<td width="5%" style="border:0; text-align:center;">4</td>
+	<td width="5%" style="border:0; text-align:center;">3</td>
+	<td width="5%" style="border:0; text-align:center;">2</td>
+	<td width="5%" style="border:0; text-align:center;">1</td>
+	<td width="5%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CiCONR</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="3">PBS2</td>
+	<td style="text-align:center;" colspan="3">PBS1</td>
+	<td style="text-align:center;" colspan="3">PTS</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="4">-</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+
+    <a name="RSCAN"></a><h3>Renesas RZ family</h3>
+    <p>This new (2013) ARM Cortex A9 based family implements the RS-CAN called module
+    with 32 bit wide registers.
+    RSCAN0CmCFG - Channel Configuration Register (m = 0 or 1)
+    The register can be read/written in 8-, 16-, and 32-bit units, initial value is 0.
+    </p><p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">RSCAN0CmCFG</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+    <a name="RSCAN-X"></a><h3>Renesas R-IN family</h3>
+    <p>This new (2013) ARM Cortex M3 based family is promoted as the <i>Renesas Industrial Networking engine</i>.
+    <br>FCNn is the CAN module name, FCN0 and FCN1.
+    The input of the modules fCAN clock can be selected by the global clock selection register FCNnGMCSPRE
+    to be divided by 1 to 16 before it goes to the module bit rate prescaler register FCNnCMBRPRS (1 to 256).
+    This results in a prescaler divider up to 4096.
+    FCNnCMBRPRS is an 8 bit register.
+    </p><p>
+    </p><table border="1" frame="void" width="60%">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">FCNnCMBRPRS </td>
+	<td style="text-align:center;" colspan="8">FCNnCMBRPRS[7:0]</td>
+    </tr>
+    </tbody></table><p></p>
+    <br>
+    Bit Timing is set via the 16 bit module bit rate register FCNnCMBTCTL.
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">FCNnCMBTCTL</td>
+	<td style="text-align:center;" colspan="2">0</td>
+	<td style="text-align:center;" colspan="2">CMBTJWLG</td>
+	<td style="text-align:center;" colspan="1">0</td>
+	<td style="text-align:center;" colspan="3">CMBTS2LG</td>
+	<td style="text-align:center;" colspan="4">0</td>
+	<td style="text-align:center;" colspan="4">CMBTS1LG</td>
+
+    </tr>
+    </tbody></table><p></p>
+    The manual has a unusual naming:
+	FCNnCMBTJWLG for SJW, FCNnCMBTS1LG for prop seg + TSEG1
+	and FCNnCMBTS2LG for TSEG2.
+    <p>
+
+</p></div>
+
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Spansion" <="" a="">
+    <h2>Spansion (formerly Fujitsu)</h2>
+    </a><a name="FCR4"></a><h3>FCR4</h3>
+    Cortex-R4 based family with 3 CAN interfaces implemeting the 
+    16 bit BOSCH <a href="http://www.bittiming.can-wiki.info/#C_CAN16">C_CAN</a> module. Select "<b>Bosch C_CAN / D_CAN</b>"
+    to calculate the bit timing register values BTR.
+
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="STMicro" <="" a="">
+    <h2>ST Microelectronics</h2>
+    </a><a name="bxCAN"></a><h3>bxCAN</h3>
+
+    The bXCAN module is used in the very popular Cortex M3 family STM32.
+    All relevant parameters are concentrated in one
+    CAN bit timing register (CAN_BTR).
+    <p>
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CAN_BTR</td>
+	<td style="text-align:center;" colspan="6">additional bits</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">-</td>
+	<td style="text-align:center;" colspan="3">TS2</td>
+	<td style="text-align:center;" colspan="4">TS1</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="10">BRP</td>
+
+    </tr>
+    </tbody></table><p></p>
+
+    <p>The bit timing pre-scaler is 10 bit wide and can divide by 1 to 1024.
+    <br>
+    Use the table calculated value of BTR and add all additional bits according your requirements
+    to get the final value for CAN_BTR.</p>
+
+
+    <a name="spear300"></a><h3>SPEAr 300</h3>
+
+    The SPEAR 300 family implemnts the bit timing registers the same way as the 16 bit BOSCH
+    <a href="http://www.bittiming.can-wiki.info/#C_CAN16">C_CAN</a> module.
+    16 bit Bit Timing Register (offset 0x0C) and
+    16 bit BRP extension register (offset 0x18).
+    Select BOSCH C_CAN for register calculation.
+
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="TI"><h2>Texas Instruments</h2></a>
+    <a name="TMS320"><h3>TMS320</h3></a>
+
+    The two Texas Instruments families 24xx and 28xx handle the bit timing register
+    slightly different.
+    240xA is using two 16-bit registers.
+    BCR2 contains the bit pre-scaler in the lowest 8 bits.
+    BCR1 contains valuse of TSEG1 (4-bit) and TSEG2 (3-bit) in the
+    lowest bits 0-6.
+    281x and 280x are using one 32-bit register BTC
+    for all timing configuration.
+    The BTC value can be combined
+    from BCR1 und BCR2 : (BCR2 &lt;&lt; 16) | BCR1
+    <br><br>
+
+    Note that the CPU clock is fed directly to the CAN module
+    (max 150 Mhz for 281x).
+    <br><br>
+
+    There is currently an issue for the high speed controllers
+    in generating low CAN bit rates.
+    For a SYSCLKOUT of 150 MHz, the smallest bit rate possible is 23.4 kbps.
+
+    <p>
+    The following is copied fom the manual chapter
+    "<i> 1.1.3 eCAN Compatibility With Other TI CAN Modules</i>"
+    </p><table border="0" width="80%" bgcolor="#D0D0D0"><tbody><tr><td>
+	The eCAN module is identical to the "High-end CAN Controller (HECC)" used in the TMS470TM series
+	microcontrollers from Texas Instruments with some minor changes. The eCAN module features several
+	enhancements (such as increased number of mailboxes with individual acceptance masks, time stamping,
+	etc.) over the CAN module featured in 240xTM series of DSPs. For this reason, code written for 240x CAN
+	modules cannot be directly ported to eCAN. However, eCAN follows the same register bit-layout structure
+	and bit functionality as that of 240x CAN (for registers that exist in both devices) i.e., many registers and
+	bits perform exactly identical functions across these two platforms. This makes code migration a relatively
+	easy task, more so with code written in C language.
+    </td></tr></tbody></table>
+    <p></p>
+
+    The 32 bit <i>Bit-Timing Configuration Register</i> CANBTC
+    <table border="1" frame="void">
+    <tbody><tr>
+	<td width="5%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBTC</td>
+	<td style="text-align:center;" colspan="8">reserved</td>
+	<td style="text-align:center;" colspan="8">BRP</td>
+	<td style="text-align:center;" colspan="6">reserved</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="1">SAM</td>
+	<td style="text-align:center;" colspan="4">TSEG1</td>
+	<td style="text-align:center;" colspan="3">TSEG2</td>
+    </tr>
+    </tbody></table><p></p>
+
+
+    <a name="AM335x"><h3>AM335x Sitara</h3></a>
+    The latest generation is using the <a href="http://www.bittiming.can-wiki.info/#D_CAN">Bosch D_CAN</a> module.
+
+    <a name="TMS570"><h3>TMS570LS31x/21x</h3></a>
+    The TMS570LS31x/21x integrates the ARM® Cortex™-R4F Floating Point CPU
+    designed for Safety Applications. Up to three CAN modules are on chip.
+    The latest generation is using the <a href="http://www.bittiming.can-wiki.info/#D_CAN">Bosch D_CAN</a> module.
+
+
+    <a name="Stellaris"><h3>Stellaris LM3S</h3></a>
+    TI's first Cortex-M3 based controllers were developed by the company Stellaris,
+    and baught by TI. These Cortex-M3 controllers implemented the Bosch
+    <a href="http://www.bittiming.can-wiki.info/#C_CAN">C_CAN</a>.
+
+    <a name="Tiva"><h3>Tiva™ C</h3></a>
+    The <strong>Tiva</strong> is the TI Cortex-M4 based controller family
+    (former Stellaris LM4).
+    The Tiva series still implements the Bosch
+    <a href="http://www.bittiming.can-wiki.info/#C_CAN">C_CAN</a> module.
+    <p>
+    CAN Bit Timing register CANBIT
+    </p><table border="1" frame="void">
+    <tbody><tr>
+	<td width="3%" style="border:0; text-align:center;">&nbsp;</td>
+	<td width="3%" style="border:0; text-align:center;">31</td>
+	<td width="3%" style="border:0; text-align:center;">30</td>
+	<td width="3%" style="border:0; text-align:center;">29</td>
+	<td width="3%" style="border:0; text-align:center;">28</td>
+	<td width="3%" style="border:0; text-align:center;">27</td>
+	<td width="3%" style="border:0; text-align:center;">26</td>
+	<td width="3%" style="border:0; text-align:center;">25</td>
+	<td width="3%" style="border:0; text-align:center;">24</td>
+	<td width="3%" style="border:0; text-align:center;">23</td>
+	<td width="3%" style="border:0; text-align:center;">22</td>
+	<td width="3%" style="border:0; text-align:center;">21</td>
+	<td width="3%" style="border:0; text-align:center;">20</td>
+	<td width="3%" style="border:0; text-align:center;">19</td>
+	<td width="3%" style="border:0; text-align:center;">18</td>
+	<td width="3%" style="border:0; text-align:center;">17</td>
+	<td width="3%" style="border:0; text-align:center;">16</td>
+	<td width="3%" style="border:0; text-align:center;">15</td>
+	<td width="3%" style="border:0; text-align:center;">14</td>
+	<td width="3%" style="border:0; text-align:center;">13</td>
+	<td width="3%" style="border:0; text-align:center;">12</td>
+	<td width="3%" style="border:0; text-align:center;">11</td>
+	<td width="3%" style="border:0; text-align:center;">10</td>
+	<td width="3%" style="border:0; text-align:center;">9</td>
+	<td width="3%" style="border:0; text-align:center;">8</td>
+	<td width="3%" style="border:0; text-align:center;">7</td>
+	<td width="3%" style="border:0; text-align:center;">6</td>
+	<td width="3%" style="border:0; text-align:center;">5</td>
+	<td width="3%" style="border:0; text-align:center;">4</td>
+	<td width="3%" style="border:0; text-align:center;">3</td>
+	<td width="3%" style="border:0; text-align:center;">2</td>
+	<td width="3%" style="border:0; text-align:center;">1</td>
+	<td width="3%" style="border:0; text-align:center;">0</td>
+    </tr>
+    <tr>
+	<td style="border:0; text-align:right;">CANBIT</td>
+	<td style="text-align:center;" colspan="17">reserved</td>
+	<td style="text-align:center;" colspan="3">TSeg2</td>
+	<td style="text-align:center;" colspan="4">TSeg1</td>
+	<td style="text-align:center;" colspan="2">SJW</td>
+	<td style="text-align:center;" colspan="6">BRP</td>
+
+    </tr>
+    </tbody></table>
+    <p>
+    For the lower 16 bit the value of BTR calculated when
+    BOSCH <a href="http://www.bittiming.can-wiki.info/#C_CAN">C_CAN</a>
+    is selected,
+    can be used.
+    </p><p>
+
+</p></div>
+<!-- ------------------------------------------------------------------ -->
+
+<div>
+    <hr>
+    <a name="Toshiba"><h2>Toshiba</h2></a>
+    <p>For the Toshiba TCAN module the calculation results for the NXP SJA1000
+    can be used.
+</p></div>
+
+<!-- ------------------------------------------------------------------ -->
+<div>
+    <hr>
+    <a name="Xilinx"><h2>Xilinx</h2></a>
+    <a name="XCAN"><h3>Xilinx XCAN - Zynq</h3></a>
+
+    <p>Xilinx Xcan e.g. integrated into the Xilinx Zynq platform.
+    The Xcan BRPR register and the Xcan BTR register are calculated.
+    Typical clock input frequency is 20Mhz. This can be configured with the Zynq clock module.</p>
+</div>
+
+<!-- ------------------------------------------------------------------ -->
+
+<!-- ==================================================================== -->
+</div> <!-- content -->
+</div> <!-- container -->
+    <script src="./CAN Bit Time Calculation_files/shariff.min.js.download"></script>
+    <script language="JavaScript" type="text/javascript" src="./CAN Bit Time Calculation_files/tq.js.download"></script>
+
+
+</div></div></div><a href="http://www.bittiming.can-wiki.info/#top" class="back-to-top" style="display: none;"><img src="./CAN Bit Time Calculation_files/top.png"></a></body></html>

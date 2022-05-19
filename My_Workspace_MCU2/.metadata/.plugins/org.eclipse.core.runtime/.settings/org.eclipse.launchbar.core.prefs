@@ -1,0 +1,14 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART2_Example,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART2_Example2_IT,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HSE_SYSCLK_8Mhz,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:PLL_SYSCLK,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:PLL_SYSCLK2_HSE,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:time_base_100ms2_IT,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:time_base_100ms (1),org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:time_base_100ms,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:timer_IC_1,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:timer_OC_1,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:timer_OC_PWM_1,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:timer_PWM_LED,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:CAN_Loopback (1),org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:CAN_Loopback,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:RTC_Date_Time
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:CAN_Loopback\ (1)/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:CAN_Loopback/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:CAN_Loopback/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HSE_SYSCLK_8Mhz/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:HSE_SYSCLK_8Mhz/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:RTC_Date_Time/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART2_Example/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:UART2_Example/activeLaunchTarget=null\:---
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:timer_IC_1/activeLaunchMode=run

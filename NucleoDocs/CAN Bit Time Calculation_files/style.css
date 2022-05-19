@@ -1,0 +1,90 @@
+body {
+    background-color: #91916D;
+    color: #141817;
+    font-family: sans-serif;
+}
+
+#header {
+    background: url(signal.png);
+    padding: 10px;
+    color: white;
+    font: 1.8em sans-serif;
+    border-bottom: #6f7400 2px solid;
+}
+
+#footer {
+}
+
+#container {
+    background-color: #DFE9F2;
+    width: 1200px;
+    margin: auto;
+    box-shadow: #141817 2px 2px 10px;
+}
+
+#navigation {
+    width: 300px;
+    float: left;
+    padding-top: 220px;
+}
+
+
+#navigation ul {
+    list-style-type: none;
+    margin: 0;
+    padding-top: 10;
+}
+#navigation a {
+    text-decoration: none;
+    letter-spacing: 1px;
+    display: block;
+    padding: 3px 5px;
+    border-bottom: 1px solid white;
+    color: #565919;
+}
+
+#navigation a:hover, #navigation a:focus, #navigation a:active {
+    background-color: #e3e0cf;
+    color: #010101;
+}
+
+#likes {
+    position: absolute;
+    left: 45px;
+    top: 850px;
+    width: 300px;
+    #float: left;
+    #padding-top: 400px;
+    #margin-left: 45px;
+    color: white;
+    background: transparent;
+    outline: 0;
+    border: 0;
+    font-size: 100%;
+}
+#content {
+    margin-left: 300px;
+    margin-right: 10px;
+    padding-bottom: 20px;
+}
+
+
+table {
+    border-collapse: collapse;
+    border: 2px solid #000;
+    font: normal 80%/140% arial, helvetica, sans-serif;
+    color: #555;
+    background-color: #eFF9F2;
+}
+td {
+    border: 2px solid #000;
+}
+
+.back-to-top {
+    background: #91916D;
+    color: white;
+    position: fixed;
+    bottom: 20px;
+    right: 10px;
+    padding: 1em;
+}

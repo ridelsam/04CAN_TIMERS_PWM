@@ -1,0 +1,10 @@
+20:31:22 **** Incremental Build of configuration Debug for project CAN_Normal_Mode_2Nodes ****
+make -j12 all 
+arm-none-eabi-size   CAN_Normal_Mode_2Nodes.elf 
+   text	   data	    bss	    dec	    hex	filename
+  17320	    120	   1808	  19248	   4b30	CAN_Normal_Mode_2Nodes.elf
+Finished building: default.size.stdout
+ 
+
+20:31:22 Build Finished. 0 errors, 0 warnings. (took 332ms)
+

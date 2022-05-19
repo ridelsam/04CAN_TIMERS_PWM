@@ -1,0 +1,27 @@
+21:31:28 **** Build of configuration Debug for project RTC_Alarm ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_hal_msp.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f4xx_hal_msp.d" -MT"Core/Src/stm32f4xx_hal_msp.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_hal_msp.o"
+arm-none-eabi-gcc "../Core/Src/stm32f4xx_it.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F446xx -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/stm32f4xx_it.d" -MT"Core/Src/stm32f4xx_it.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f4xx_it.o"
+../Core/Src/main.c: In function 'printmsg':
+../Core/Src/main.c:44:2: warning: implicit declaration of function 'vsprintf' [-Wimplicit-function-declaration]
+   44 |  vsprintf(str, format,args);
+      |  ^~~~~~~~
+../Core/Src/stm32f4xx_hal_msp.c: In function 'HAL_RTC_MspInit':
+../Core/Src/stm32f4xx_hal_msp.c:77:5: warning: implicit declaration of function 'Error_handler' [-Wimplicit-function-declaration]
+   77 |     Error_handler();
+      |     ^~~~~~~~~~~~~
+arm-none-eabi-gcc -o "RTC_Alarm.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Users\rsamonte\Embedded_Systems\CAN_TIMERS_PWM\My_Workspace_MCU2\RTC_Alarm\STM32F446RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="RTC_Alarm.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: RTC_Alarm.elf
+ 
+arm-none-eabi-size   RTC_Alarm.elf 
+arm-none-eabi-objdump -h -S  RTC_Alarm.elf  > "RTC_Alarm.list"
+   text	   data	    bss	    dec	    hex	filename
+  17044	    120	   1688	  18852	   49a4	RTC_Alarm.elf
+Finished building: default.size.stdout
+ 
+Finished building: RTC_Alarm.list
+ 
+
+21:31:29 Build Finished. 0 errors, 2 warnings. (took 1s.271ms)
+
